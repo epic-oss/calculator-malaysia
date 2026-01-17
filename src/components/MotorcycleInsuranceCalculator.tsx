@@ -360,18 +360,29 @@ export default function MotorcycleInsuranceCalculator() {
 
                 {/* CTA Card - Bjak Affiliate */}
                 <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-                  <div className="flex items-start gap-4">
-                    <div className="text-4xl">🏍️</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-800 mb-1">Get Best Price on Bjak</h3>
-                      <p className="text-sm text-slate-500">Compare quotes from 15+ insurers instantly</p>
-                    </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-2xl">🎯</span>
+                    <h3 className="text-lg font-bold text-slate-800">Get Free Quote</h3>
                   </div>
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Compare prices from 15+ insurers
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Save up to 25% vs direct purchase
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Free claims assistance
+                    </li>
+                  </ul>
                   <button
                     onClick={handleGetQuote}
-                    className="w-full py-3 mt-4 bg-orange-600 hover:bg-orange-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    Get Quote Now
+                    Get Free Quote
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>

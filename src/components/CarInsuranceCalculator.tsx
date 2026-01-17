@@ -526,16 +526,27 @@ export default function CarInsuranceCalculator() {
 
                 {/* CTA Card */}
                 <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-                  <div className="flex items-start gap-4">
-                    <div className="text-4xl">🤝</div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-800 mb-1">Get Agent Support</h3>
-                      <p className="text-sm text-slate-500">Compare prices from 15+ insurers. Personal agent support + fast claims assistance.</p>
-                    </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-2xl">🎯</span>
+                    <h3 className="text-lg font-bold text-slate-800">Get Free Quote</h3>
                   </div>
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Compare prices from 15+ insurers
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Save up to 25% vs direct purchase
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                      <span className="text-green-500 font-bold">✓</span>
+                      Free claims assistance
+                    </li>
+                  </ul>
                   <button
                     onClick={openModal}
-                    className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
+                    className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
                   >
                     Get Free Quote
                   </button>
