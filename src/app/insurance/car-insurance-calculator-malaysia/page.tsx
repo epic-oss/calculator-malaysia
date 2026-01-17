@@ -461,9 +461,9 @@ export default function CarInsuranceCalculatorPage() {
             </h3>
 
             <p className="text-slate-600 leading-relaxed mb-4">
-              Use the calculator above to estimate your premium, then click &quot;Talk to Agent&quot;
-              to get personalized quotes from our insurance experts. We&apos;ll help you find the
-              best coverage at the best price.
+              Use the calculator above to estimate your premium, then click &quot;Get Free Quote&quot;
+              to compare prices from 15+ insurers. Our agents will help you find the
+              best coverage at the best price, handle all the paperwork, and assist with claims.
             </p>
 
             <p className="text-slate-600 leading-relaxed">

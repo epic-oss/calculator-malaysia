@@ -530,14 +530,14 @@ export default function CarInsuranceCalculator() {
                     <div className="text-4xl">🤝</div>
                     <div className="flex-1">
                       <h3 className="text-lg font-bold text-slate-800 mb-1">Get Agent Support</h3>
-                      <p className="text-sm text-slate-500">Personal service + claims assistance</p>
+                      <p className="text-sm text-slate-500">Compare prices from 15+ insurers. Personal agent support + fast claims assistance.</p>
                     </div>
                   </div>
                   <button
                     onClick={openModal}
                     className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
                   >
-                    Talk to Agent
+                    Get Free Quote
                   </button>
                 </div>
               </div>
