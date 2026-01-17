@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { calculators, categories } from "@/data/calculators";
 import { CalculatorCard, FeaturedCalculatorCard } from "@/components/CalculatorCard";
 
@@ -45,9 +46,15 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
         <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🧮</span>
-            <span className="font-bold text-xl text-slate-900">Calculator Malaysia</span>
+          <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <Image
+              src="/logo.webp"
+              alt="Calculator Malaysia"
+              width={40}
+              height={40}
+              className="w-10 h-10"
+            />
+            <span className="font-bold text-xl"><span className="text-blue-800">Calculator</span> <span className="text-red-600">Malaysia</span></span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -367,8 +374,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🧮</span>
-              <span className="font-bold text-xl">Calculator Malaysia</span>
+              <Image
+                src="/logo.webp"
+                alt="Calculator Malaysia"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
+              <span className="font-bold text-xl"><span className="text-blue-400">Calculator</span> <span className="text-red-400">Malaysia</span></span>
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
               <a href="/about" className="hover:text-white transition-colors">

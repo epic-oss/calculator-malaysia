@@ -1,5 +1,7 @@
 import EVInsuranceCalculator from "@/components/EVInsuranceCalculator";
+import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
   title: "EV Car Insurance Calculator Malaysia 2026 | Calculator Malaysia",
@@ -10,7 +12,9 @@ export const metadata = {
 export default function EVInsuranceCalculatorPage() {
   return (
     <div>
-      {/* Back Navigation */}
+      <Navbar />
+
+      {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <Link
@@ -302,8 +306,14 @@ export default function EVInsuranceCalculatorPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🧮</span>
-              <span className="font-bold text-xl">Calculator Malaysia</span>
+              <Image
+                src="/logo.webp"
+                alt="Calculator Malaysia"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
+              <span className="font-bold text-xl"><span className="text-blue-400">Calculator</span> <span className="text-red-400">Malaysia</span></span>
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
               <Link href="/" className="hover:text-white transition-colors">

@@ -25,6 +25,10 @@ export const metadata: Metadata = {
     "epf calculator",
     "ev insurance malaysia",
   ],
+  icons: {
+    icon: "/logo.webp",
+    apple: "/logo.webp",
+  },
 };
 
 export default function RootLayout({

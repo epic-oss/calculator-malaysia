@@ -5,72 +5,57 @@ import { useState, useMemo } from "react";
 const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
 
 interface CapturedCalculation {
-  vehicleModel: string;
+  vehicleType: string;
   vehicleValue: number;
+  engineCC: string;
   ncdPercent: number;
   annualPremium: number;
   roadTax: number;
   coverageType: string;
 }
 
-const VEHICLE_MODELS = {
-  "Mass Market (RM60k-200k)": [
-    "Proton e.MAS 7",
-    "Proton e.MAS 5",
-    "BYD Atto 3",
-    "BYD Atto 2",
-    "BYD Sealion 7",
-    "BYD Seal",
-    "BYD Seal 6",
-    "BYD Dolphin",
-    "BYD M6",
-    "MG ZS EV",
-    "Ora Good Cat",
-    "iCaur 03",
-    "Xpeng G6",
-    "Leapmotor C10",
-  ],
-  "Premium (RM200k-500k)": [
-    "Tesla Model Y",
-    "Tesla Model 3",
-    "Zeekr 7X",
-    "Zeekr 009",
-    "BMW iX1",
-    "BMW iX",
-    "BMW i5",
-    "Hyundai Ioniq 5",
-    "Denza D9",
-    "Xpeng X9",
-    "MINI Aceman",
-  ],
-  "Luxury (RM500k+)": [
-    "Porsche Taycan",
-    "Mercedes EQS",
-    "BMW iX xDrive40",
-  ],
-};
+const VEHICLE_TYPES = [
+  "Sedan",
+  "SUV",
+  "MPV",
+  "Hatchback",
+  "Pickup / 4x4",
+  "Coupe",
+  "Wagon",
+  "Sports Car",
+];
 
-const OTHER_OPTION = "Other (Please specify)";
+const ENGINE_CC_OPTIONS = [
+  { label: "Below 1,000cc", value: "below-1000", roadTax: 20, baseRate: 0.024 },
+  { label: "1,000cc - 1,400cc", value: "1000-1400", roadTax: 55, baseRate: 0.026 },
+  { label: "1,401cc - 1,600cc", value: "1401-1600", roadTax: 90, baseRate: 0.028 },
+  { label: "1,601cc - 1,800cc", value: "1601-1800", roadTax: 200, baseRate: 0.030 },
+  { label: "1,801cc - 2,000cc", value: "1801-2000", roadTax: 280, baseRate: 0.032 },
+  { label: "2,001cc - 2,500cc", value: "2001-2500", roadTax: 450, baseRate: 0.034 },
+  { label: "2,501cc - 3,000cc", value: "2501-3000", roadTax: 750, baseRate: 0.036 },
+  { label: "Above 3,000cc", value: "above-3000", roadTax: 1200, baseRate: 0.038 },
+];
 
 const NCD_OPTIONS = [
-  { label: "0%", value: 0 },
-  { label: "25%", value: 0.25 },
-  { label: "30%", value: 0.30 },
-  { label: "38.33%", value: 0.3833 },
-  { label: "45%", value: 0.45 },
-  { label: "55%", value: 0.55 },
+  { label: "0% (New / After Claim)", value: 0 },
+  { label: "25% (1 year claim-free)", value: 0.25 },
+  { label: "30% (2 years claim-free)", value: 0.30 },
+  { label: "38.33% (3 years claim-free)", value: 0.3833 },
+  { label: "45% (4 years claim-free)", value: 0.45 },
+  { label: "55% (5+ years claim-free)", value: 0.55 },
 ];
 
 const SST_RATE = 0.08;
 const STAMP_DUTY = 10;
 
-export default function EVInsuranceCalculator() {
-  const [selectedModel, setSelectedModel] = useState(VEHICLE_MODELS["Mass Market (RM60k-200k)"][0]);
-  const [customModel, setCustomModel] = useState("");
-  const [marketValue, setMarketValue] = useState(150000);
-  const [powerOutput, setPowerOutput] = useState(150);
+export default function CarInsuranceCalculator() {
+  const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0]);
+  const [marketValue, setMarketValue] = useState(80000);
+  const [vehicleAge, setVehicleAge] = useState(0);
+  const [engineCC, setEngineCC] = useState(ENGINE_CC_OPTIONS[2].value);
   const [ncdDiscount, setNcdDiscount] = useState(0);
-  const [region, setRegion] = useState<"peninsular" | "sabah-sarawak">("peninsular");
+  const [coverageType, setCoverageType] = useState<"third-party" | "comprehensive">("comprehensive");
+  const [region, setRegion] = useState<"peninsular" | "east-malaysia">("peninsular");
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -78,7 +63,6 @@ export default function EVInsuranceCalculator() {
     email: "",
     phone: "+60",
   });
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ show: boolean; type: "success" | "error"; message: string }>({
     show: false,
@@ -87,22 +71,54 @@ export default function EVInsuranceCalculator() {
   });
   const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
 
-  const isOtherSelected = selectedModel === OTHER_OPTION;
-  const vehicleModel = isOtherSelected ? customModel || "Custom Vehicle" : selectedModel;
+  const selectedEngineOption = ENGINE_CC_OPTIONS.find(opt => opt.value === engineCC) || ENGINE_CC_OPTIONS[2];
 
   const calculation = useMemo(() => {
-    const baseRate = region === "peninsular" ? 0.026 : 0.018;
-    const basePremium = marketValue * baseRate;
-    const ncdAmount = basePremium * ncdDiscount;
-    const afterNcd = basePremium - ncdAmount;
+    // Base premium calculation
+    let basePremium: number;
+
+    if (coverageType === "third-party") {
+      // Third party is much cheaper - flat rates based on engine CC
+      if (engineCC === "below-1000") basePremium = 120;
+      else if (engineCC === "1000-1400") basePremium = 150;
+      else if (engineCC === "1401-1600") basePremium = 180;
+      else if (engineCC === "1601-1800") basePremium = 220;
+      else if (engineCC === "1801-2000") basePremium = 280;
+      else if (engineCC === "2001-2500") basePremium = 350;
+      else if (engineCC === "2501-3000") basePremium = 450;
+      else basePremium = 600;
+    } else {
+      // Comprehensive - based on market value and engine CC rate
+      basePremium = marketValue * selectedEngineOption.baseRate;
+    }
+
+    // Age loading (older cars cost more to insure)
+    const ageLoading = vehicleAge > 5 ? basePremium * Math.min(vehicleAge - 5, 10) * 0.02 : 0;
+
+    // Vehicle type loading (SUVs, Sports Cars cost slightly more)
+    const typeMultiplier =
+      vehicleType === "SUV" ? 1.05 :
+      vehicleType === "Sports Car" ? 1.15 :
+      vehicleType === "Pickup / 4x4" ? 1.08 :
+      1;
+
+    // Region adjustment (East Malaysia slightly cheaper)
+    const regionMultiplier = region === "peninsular" ? 1 : 0.92;
+
+    const adjustedPremium = (basePremium + ageLoading) * typeMultiplier * regionMultiplier;
+    const ncdAmount = adjustedPremium * ncdDiscount;
+    const afterNcd = adjustedPremium - ncdAmount;
     const sstAmount = afterNcd * SST_RATE;
     const totalPremium = afterNcd + sstAmount + STAMP_DUTY;
 
-    // Road tax calculation for EV (simplified Malaysian rates)
-    const roadTax = powerOutput <= 100 ? 20 : powerOutput <= 150 ? 40 : powerOutput <= 200 ? 80 : 120;
+    // Road tax based on engine CC (Peninsular rates, East Malaysia is different)
+    let roadTax = selectedEngineOption.roadTax;
+    if (region === "east-malaysia") {
+      roadTax = Math.round(roadTax * 0.5); // East Malaysia road tax is roughly half
+    }
 
     return {
-      basePremium,
+      basePremium: adjustedPremium,
       ncdAmount,
       afterNcd,
       sstAmount,
@@ -110,7 +126,7 @@ export default function EVInsuranceCalculator() {
       totalPremium,
       roadTax,
     };
-  }, [marketValue, ncdDiscount, region, powerOutput]);
+  }, [marketValue, vehicleAge, engineCC, ncdDiscount, coverageType, region, vehicleType, selectedEngineOption]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-MY", {
@@ -130,12 +146,13 @@ export default function EVInsuranceCalculator() {
   const openModal = () => {
     // Capture calculator values BEFORE opening modal
     setCapturedCalc({
-      vehicleModel,
+      vehicleType,
       vehicleValue: marketValue,
+      engineCC: selectedEngineOption.label,
       ncdPercent: Math.round(ncdDiscount * 100),
       annualPremium: Math.round(calculation.totalPremium),
       roadTax: Math.round(calculation.roadTax),
-      coverageType: "Comprehensive",
+      coverageType: coverageType === "comprehensive" ? "Comprehensive" : "Third Party",
     });
     setShowModal(true);
   };
@@ -155,9 +172,10 @@ export default function EVInsuranceCalculator() {
       name: formData.fullName,
       whatsapp: formData.phone,
       email: formData.email,
-      calculator_type: "ev_insurance",
+      calculator_type: "car_insurance",
       vehicle_value: capturedCalc.vehicleValue,
-      vehicle_type: capturedCalc.vehicleModel,
+      vehicle_type: capturedCalc.vehicleType,
+      engine_cc: capturedCalc.engineCC,
       ncd_percent: capturedCalc.ncdPercent,
       annual_premium: capturedCalc.annualPremium,
       road_tax: capturedCalc.roadTax,
@@ -191,7 +209,6 @@ export default function EVInsuranceCalculator() {
 
   const closeModal = () => {
     setShowModal(false);
-    setFormSubmitted(false);
     setFormData({ fullName: "", email: "", phone: "+60" });
     setCapturedCalc(null);
   };
@@ -200,48 +217,32 @@ export default function EVInsuranceCalculator() {
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">
-          EV Car Insurance Calculator
+          Car Insurance Calculator
         </h1>
         <p className="text-center text-slate-500 mb-8">
-          Calculate your electric vehicle insurance premium in Malaysia
+          Calculate your car insurance premium and road tax in Malaysia
         </p>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Input Form - Left Side */}
           <div className="lg:w-1/2">
             <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
-              {/* Vehicle Model */}
+              {/* Vehicle Type */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Vehicle Model
+                  Vehicle Type
                 </label>
                 <select
-                  value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value)}
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
-                  {Object.entries(VEHICLE_MODELS).map(([category, models]) => (
-                    <optgroup key={category} label={category}>
-                      {models.map((model) => (
-                        <option key={model} value={model}>
-                          {model}
-                        </option>
-                      ))}
-                    </optgroup>
+                  {VEHICLE_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
                   ))}
-                  <option value={OTHER_OPTION}>{OTHER_OPTION}</option>
                 </select>
-
-                {/* Custom Vehicle Input */}
-                {isOtherSelected && (
-                  <input
-                    type="text"
-                    value={customModel}
-                    onChange={(e) => setCustomModel(e.target.value)}
-                    placeholder="Enter your vehicle model"
-                    className="w-full mt-3 px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
-                )}
               </div>
 
               {/* Market Value */}
@@ -253,8 +254,8 @@ export default function EVInsuranceCalculator() {
                   <input
                     type="number"
                     value={marketValue}
-                    onChange={(e) => setMarketValue(Number(e.target.value))}
-                    min={30000}
+                    onChange={(e) => setMarketValue(Math.max(20000, Math.min(500000, Number(e.target.value))))}
+                    min={20000}
                     max={500000}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
@@ -262,37 +263,70 @@ export default function EVInsuranceCalculator() {
                     type="range"
                     value={marketValue}
                     onChange={(e) => setMarketValue(Number(e.target.value))}
-                    min={30000}
+                    min={20000}
                     max={500000}
                     step={5000}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                   />
                   <div className="flex justify-between text-xs text-slate-400">
-                    <span>RM 30,000</span>
+                    <span>RM 20,000</span>
                     <span>RM 500,000</span>
                   </div>
                 </div>
               </div>
 
-              {/* Power Output */}
+              {/* Vehicle Age */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Power Output (kW)
+                  Vehicle Age (Years)
                 </label>
-                <input
-                  type="number"
-                  value={powerOutput}
-                  onChange={(e) => setPowerOutput(Number(e.target.value))}
-                  min={50}
-                  max={300}
+                <div className="space-y-3">
+                  <input
+                    type="number"
+                    value={vehicleAge}
+                    onChange={(e) => setVehicleAge(Math.max(0, Math.min(15, Number(e.target.value))))}
+                    min={0}
+                    max={15}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                  <input
+                    type="range"
+                    value={vehicleAge}
+                    onChange={(e) => setVehicleAge(Number(e.target.value))}
+                    min={0}
+                    max={15}
+                    step={1}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  />
+                  <div className="flex justify-between text-xs text-slate-400">
+                    <span>Brand New</span>
+                    <span>15 years</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Engine CC */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Engine Capacity (CC)
+                </label>
+                <select
+                  value={engineCC}
+                  onChange={(e) => setEngineCC(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
+                >
+                  {ENGINE_CC_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* NCD Discount */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  NCD Discount
+                  NCD Discount (No Claim Discount)
                 </label>
                 <select
                   value={ncdDiscount}
@@ -305,6 +339,40 @@ export default function EVInsuranceCalculator() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Coverage Type Toggle */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Coverage Type
+                </label>
+                <div className="flex rounded-xl bg-slate-100 p-1">
+                  <button
+                    onClick={() => setCoverageType("third-party")}
+                    className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all ${
+                      coverageType === "third-party"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-slate-600 hover:text-slate-800"
+                    }`}
+                  >
+                    Third Party
+                  </button>
+                  <button
+                    onClick={() => setCoverageType("comprehensive")}
+                    className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all ${
+                      coverageType === "comprehensive"
+                        ? "bg-white text-blue-600 shadow-sm"
+                        : "text-slate-600 hover:text-slate-800"
+                    }`}
+                  >
+                    Comprehensive
+                  </button>
+                </div>
+                <p className="text-xs text-slate-400 mt-2">
+                  {coverageType === "third-party"
+                    ? "Covers damage to other vehicles and property only"
+                    : "Covers your car + third party damage, theft, and fire"}
+                </p>
               </div>
 
               {/* Region Toggle */}
@@ -321,12 +389,12 @@ export default function EVInsuranceCalculator() {
                         : "text-slate-600 hover:text-slate-800"
                     }`}
                   >
-                    Peninsular Malaysia
+                    Peninsular
                   </button>
                   <button
-                    onClick={() => setRegion("sabah-sarawak")}
+                    onClick={() => setRegion("east-malaysia")}
                     className={`flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all ${
-                      region === "sabah-sarawak"
+                      region === "east-malaysia"
                         ? "bg-white text-blue-600 shadow-sm"
                         : "text-slate-600 hover:text-slate-800"
                     }`}
@@ -353,7 +421,7 @@ export default function EVInsuranceCalculator() {
                     {formatCurrency(calculation.totalPremium)}
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
-                    Including SST & Stamp Duty
+                    {coverageType === "third-party" ? "Third Party Coverage" : "Comprehensive Coverage"}
                   </p>
                 </div>
 
@@ -390,7 +458,7 @@ export default function EVInsuranceCalculator() {
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">NCD Discount</span>
+                      <span className="text-slate-500">NCD Discount ({Math.round(ncdDiscount * 100)}%)</span>
                       <span className="text-green-600 font-medium">
                         - {formatCurrency(calculation.ncdAmount)}
                       </span>
@@ -414,7 +482,7 @@ export default function EVInsuranceCalculator() {
                       </span>
                     </div>
                     <div className="flex justify-between text-sm pt-3 border-t border-slate-100">
-                      <span className="text-slate-700 font-semibold">Total</span>
+                      <span className="text-slate-700 font-semibold">Total Premium</span>
                       <span className="text-blue-600 font-bold">
                         {formatCurrency(calculation.totalPremium)}
                       </span>
@@ -429,15 +497,15 @@ export default function EVInsuranceCalculator() {
                   </h3>
                   <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl">
                     <div>
-                      <p className="text-xs text-green-600 mb-1">EV Road Tax</p>
+                      <p className="text-xs text-green-600 mb-1">Road Tax</p>
                       <p className="text-2xl font-bold text-green-700">
                         {formatCurrency(calculation.roadTax)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-slate-500">Power Output</p>
+                      <p className="text-xs text-slate-500">Engine</p>
                       <p className="text-sm font-medium text-slate-700">
-                        {powerOutput} kW
+                        {selectedEngineOption.label}
                       </p>
                     </div>
                   </div>
@@ -462,7 +530,7 @@ export default function EVInsuranceCalculator() {
                     <div className="text-4xl">🤝</div>
                     <div className="flex-1">
                       <h3 className="text-lg font-bold text-slate-800 mb-1">Get Agent Support</h3>
-                      <p className="text-sm text-slate-500">24/7 personal service + claims assistance</p>
+                      <p className="text-sm text-slate-500">Personal service + claims assistance</p>
                     </div>
                   </div>
                   <button
@@ -482,113 +550,95 @@ export default function EVInsuranceCalculator() {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            {!formSubmitted ? (
-              <>
-                <div className="p-6 border-b border-slate-100">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-slate-800">Get Expert Quote</h3>
-                    <button
-                      onClick={closeModal}
-                      className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                    >
-                      <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  {/* Pre-filled Data Display (uses captured values) */}
-                  {capturedCalc && (
-                    <div className="mb-6 p-4 bg-slate-50 rounded-xl space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Vehicle</span>
-                        <span className="text-slate-700 font-medium">{capturedCalc.vehicleModel}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Estimated Premium</span>
-                        <span className="text-blue-600 font-bold">{formatCurrency(capturedCalc.annualPremium)}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <form onSubmit={handleFormSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.fullName}
-                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="Enter your full name"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="your@email.com"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+60123456789"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
-                    >
-                      {isSubmitting ? "Submitting..." : "Submit Request"}
-                    </button>
-                  </form>
-
-                  <p className="text-xs text-slate-400 text-center mt-4">
-                    By submitting, you agree to be contacted by our insurance advisors.
-                  </p>
-                </div>
-              </>
-            ) : (
-              <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">Request Submitted!</h3>
-                <p className="text-slate-500 mb-6">
-                  Our insurance advisor will contact you within 24 hours with a personalized quote.
-                </p>
+            <div className="p-6 border-b border-slate-100">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-slate-800">Get Expert Quote</h3>
                 <button
                   onClick={closeModal}
-                  className="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-white font-medium transition-all"
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                 >
-                  Close
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-            )}
+            </div>
+
+            <div className="p-6">
+              {/* Pre-filled Data Display */}
+              {capturedCalc && (
+                <div className="mb-6 p-4 bg-slate-50 rounded-xl space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Vehicle</span>
+                    <span className="text-slate-700 font-medium">{capturedCalc.vehicleType}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Coverage</span>
+                    <span className="text-slate-700 font-medium">{capturedCalc.coverageType}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Estimated Premium</span>
+                    <span className="text-blue-600 font-bold">{formatCurrency(capturedCalc.annualPremium)}</span>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    placeholder="Enter your full name"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    WhatsApp Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+60123456789"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
+                >
+                  {isSubmitting ? "Submitting..." : "Get My Quote"}
+                </button>
+              </form>
+
+              <p className="text-xs text-slate-400 text-center mt-4">
+                By submitting, you agree to be contacted by our insurance advisors.
+              </p>
+            </div>
           </div>
         </div>
       )}

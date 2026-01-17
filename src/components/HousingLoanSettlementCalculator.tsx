@@ -726,33 +726,11 @@ export default function HousingLoanSettlementCalculator() {
                 </div>
               </div>
 
-              {/* CTA Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Compare Bank Rates Card */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col h-full">
+              {/* CTA Card */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">💬</div>
                   <div className="flex-1">
-                    <div className="text-4xl mb-3">🏦</div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-1">
-                      Compare Bank Rates
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      Find banks with lowest interest rates for refinancing
-                    </p>
-                  </div>
-                  <a
-                    href="https://www.imoney.my/housing-loan"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full py-3 mt-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-white text-center font-semibold transition-colors"
-                  >
-                    Compare Now
-                  </a>
-                </div>
-
-                {/* Talk to Expert Card */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col h-full">
-                  <div className="flex-1">
-                    <div className="text-4xl mb-3">💬</div>
                     <h3 className="text-lg font-bold text-slate-800 mb-1">
                       Talk to Loan Expert
                     </h3>
@@ -760,13 +738,13 @@ export default function HousingLoanSettlementCalculator() {
                       Free consultation on settlement vs refinancing
                     </p>
                   </div>
-                  <button
-                    onClick={openModal}
-                    className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
-                  >
-                    Get Advice
-                  </button>
                 </div>
+                <button
+                  onClick={openModal}
+                  className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
+                >
+                  Get Advice
+                </button>
               </div>
             </div>
           </div>
