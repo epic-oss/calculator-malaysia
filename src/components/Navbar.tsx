@@ -9,13 +9,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
 
-  const handleCategoryClick = (categoryId: string) => {
-    setCategoriesDropdownOpen(false);
-    setMobileMenuOpen(false);
-    // Navigate to homepage with category filter
-    window.location.href = `/#categories`;
-  };
-
   return (
     <>
       {/* Navbar */}

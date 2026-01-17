@@ -56,9 +56,6 @@ export default function CarLoanSettlementCalculator() {
     // Penalty calculation
     const penaltyFee = outstandingBalance * (penaltyPercentage / 100);
 
-    // Settlement amount
-    const settlementAmount = outstandingBalance + penaltyFee;
-
     // Interest remaining if continue paying
     const totalInterestIfContinue = (remainingMonths / totalMonths) * totalInterest;
 

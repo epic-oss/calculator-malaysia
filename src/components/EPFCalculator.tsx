@@ -161,9 +161,6 @@ export default function EPFCalculator() {
     setSubmitError("");
   };
 
-  // Calculate chart bar heights (max height is 100%)
-  const maxBalance = calculation.yearlyBalances[calculation.yearlyBalances.length - 1]?.balance || 1;
-
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">

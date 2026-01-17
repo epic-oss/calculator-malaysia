@@ -67,20 +67,6 @@ export default function CGPACalculator() {
   const gradePoints = gradingScale === "4.0" ? GRADE_POINTS_4 : GRADE_POINTS_5;
   const maxGPA = gradingScale === "4.0" ? 4.0 : 5.0;
 
-  // Calculate GPA for a single semester
-  const calculateSemesterGPA = (semester: Semester) => {
-    let totalQualityPoints = 0;
-    let totalCredits = 0;
-
-    semester.subjects.forEach((subject) => {
-      const gradePoint = gradePoints[subject.grade] || 0;
-      totalQualityPoints += gradePoint * subject.creditHours;
-      totalCredits += subject.creditHours;
-    });
-
-    return totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
-  };
-
   const calculation = useMemo(() => {
     let totalQualityPoints = 0;
     let totalCredits = 0;

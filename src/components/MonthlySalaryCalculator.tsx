@@ -10,8 +10,6 @@ const EPF_EMPLOYEE_RATES = [
   { label: "0% (Exempted)", value: 0 },
 ];
 
-const EPF_EMPLOYER_RATE = 0.13; // 13% for salary > RM5,000, 12% for <= RM5,000
-
 const SOCSO_CATEGORIES = [
   { label: "Category 1 (Employment Injury + Invalidity)", value: 1 },
   { label: "Category 2 (Employment Injury only - Age 55+)", value: 2 },
