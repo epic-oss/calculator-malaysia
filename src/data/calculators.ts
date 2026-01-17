@@ -31,14 +31,14 @@ export const categoryLabels: Record<string, string> = {
 };
 
 export const calculators: Calculator[] = [
-  // FEATURED
+  // FEATURED - EV Insurance (1,374 clicks)
   {
     id: "ev-insurance",
     name: "EV Car Insurance Calculator Malaysia 2026",
     description: "Calculate your electric vehicle insurance premium and road tax in seconds. Compare prices from 15+ insurers.",
     category: "insurance",
     icon: "🚗",
-    slug: "/insurance/ev-insurance-calculator-malaysia/",
+    slug: "/insurance/ev-car-insurance-calculator-malaysia/",
     featured: true,
     stats: ["28+ EV Models", "Instant Quote", "Free Comparison"],
   },
@@ -46,11 +46,11 @@ export const calculators: Calculator[] = [
   // INSURANCE CALCULATORS
   {
     id: "motorcycle-insurance",
-    name: "Motorcycle Insurance Calculator",
+    name: "Road Tax & Motorcycle Insurance Calculator",
     description: "Calculate motorcycle insurance premium and road tax. Compare third party vs comprehensive coverage.",
     category: "insurance",
     icon: "🏍️",
-    slug: "/insurance/motorcycle-insurance-calculator-malaysia/",
+    slug: "/insurance/road-tax-and-motorcycle-insurance-calculator/",
     colSpan: 6,
   },
   {
@@ -68,7 +68,7 @@ export const calculators: Calculator[] = [
     description: "Get Allianz motorcycle insurance quote instantly",
     category: "insurance",
     icon: "🛡️",
-    slug: "/insurance/allianz-motorcycle-insurance-calculator/",
+    slug: "/insurance/allianz-motorcycle-insurance-calculator-malaysia/",
     colSpan: 4,
   },
   {
@@ -77,8 +77,17 @@ export const calculators: Calculator[] = [
     description: "Find the cheapest motorcycle insurance in Malaysia",
     category: "insurance",
     icon: "💸",
-    slug: "/insurance/cheapest-motorcycle-insurance-calculator/",
-    colSpan: 3,
+    slug: "/insurance/cheapest-motorcycle-insurance-calculator-malaysia/",
+    colSpan: 4,
+  },
+  {
+    id: "kalkulator-insurans-motor",
+    name: "Kalkulator Insurans Motor Malaysia",
+    description: "Kira premium insurans motor anda dengan segera",
+    category: "insurance",
+    icon: "🏍️",
+    slug: "/insurance/kalkulator-insurans-motor-malaysia/",
+    colSpan: 4,
   },
 
   // LOAN CALCULATORS
@@ -92,6 +101,15 @@ export const calculators: Calculator[] = [
     colSpan: 6,
   },
   {
+    id: "car-loan",
+    name: "Car Loan Calculator Malaysia",
+    description: "Calculate car loan monthly payment and total interest for hire purchase.",
+    category: "loan",
+    icon: "🚙",
+    slug: "/loan/car-loan-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
     id: "housing-loan-settlement",
     name: "Early Housing Loan Settlement Calculator",
     description: "Find out if settling your housing loan early makes financial sense. Calculate savings, penalties & get recommendations.",
@@ -101,21 +119,30 @@ export const calculators: Calculator[] = [
     colSpan: 6,
   },
   {
+    id: "house-loan",
+    name: "House Loan Calculator Malaysia",
+    description: "Calculate monthly instalment, total interest, and upfront costs for housing loans.",
+    category: "loan",
+    icon: "🏡",
+    slug: "/loan/house-loan-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
     id: "personal-loan",
-    name: "Personal Loan Calculator",
+    name: "Personal Loan Calculator Based on Salary",
     description: "Calculate monthly payment, total interest, and check DSR eligibility for personal loans.",
     category: "loan",
     icon: "💵",
-    slug: "/loan/personal-loan-calculator-malaysia/",
+    slug: "/loan/personal-loan-calculator-malaysia-based-on-salary/",
     colSpan: 6,
   },
   {
     id: "joint-home-loan",
-    name: "Joint Home Loan Calculator",
+    name: "Joint Home Loan Eligibility Calculator",
     description: "Calculate combined loan eligibility for couples & co-borrowers",
     category: "loan",
     icon: "👫",
-    slug: "/loan/joint-home-loan-calculator-malaysia/",
+    slug: "/loan/joint-home-loan-eligibility-calculator-malaysia/",
     colSpan: 6,
   },
   {
@@ -127,24 +154,15 @@ export const calculators: Calculator[] = [
     slug: "/loan/home-loan-eligibility-calculator-malaysia/",
     colSpan: 6,
   },
-  {
-    id: "housing-loan",
-    name: "Housing Loan Calculator",
-    description: "Calculate monthly instalment, total interest, and upfront costs",
-    category: "loan",
-    icon: "🏡",
-    slug: "/loan/housing-loan-calculator-malaysia/",
-    colSpan: 6,
-  },
 
   // PROPERTY CALCULATORS
   {
     id: "quit-rent",
-    name: "Quit Rent Calculator Malaysia (Cukai Tanah)",
-    description: "Calculate quit rent for all states. Check rates, deadlines, and pay online.",
+    name: "Quit Rent Calculator Selangor (Cukai Tanah)",
+    description: "Calculate quit rent for Selangor and all states. Check rates, deadlines, and pay online.",
     category: "property",
     icon: "📜",
-    slug: "/property/quit-rent-calculator-malaysia/",
+    slug: "/property/quit-rent-calculator-selangor/",
     colSpan: 6,
   },
 
@@ -173,95 +191,48 @@ export const calculators: Calculator[] = [
     description: "Compare credit cards and calculate rewards",
     category: "credit-card",
     icon: "🎁",
-    slug: "/credit-card/calculator-malaysia/",
+    slug: "/credit-card/credit-card-calculator-malaysia/",
     colSpan: 6,
   },
 
   // TAX CALCULATORS
   {
     id: "epf-calculator",
-    name: "EPF Calculator Malaysia (KWSP)",
+    name: "EPF Retirement Calculator Malaysia (KWSP)",
     description: "Calculate EPF contributions, project retirement savings, and see Account 1 & 2 breakdown.",
     category: "tax",
     icon: "📊",
-    slug: "/epf/epf-calculator-malaysia/",
+    slug: "/tax/epf-retirement-calculator-malaysia/",
     colSpan: 6,
   },
   {
-    id: "pcb-calculator",
-    name: "PCB Calculator (Kira Gaji)",
-    description: "Calculate monthly tax deduction (PCB/MTD) from salary",
+    id: "kalkulator-gaji",
+    name: "Kalkulator Kira Gaji Bulanan Malaysia",
+    description: "Kira gaji bersih selepas potongan EPF, SOCSO, EIS, dan PCB.",
     category: "tax",
     icon: "🧾",
-    slug: "/tax/pcb-calculator/",
-    colSpan: 4,
+    slug: "/tax/kalkulator-kira-gaji-bulanan-malaysia/",
+    colSpan: 6,
   },
-  {
-    id: "simple-pcb",
-    name: "Simple Monthly PCB Calculator",
-    description: "Quick and easy PCB calculation for employees",
-    category: "tax",
-    icon: "✨",
-    slug: "/tax/simple-pcb-calculator/",
-    colSpan: 4,
-  },
-
-  // SALARY CALCULATORS
   {
     id: "monthly-salary",
     name: "Monthly Salary Calculator Malaysia",
     description: "Calculate net salary after EPF, SOCSO, EIS, and PCB deductions. See your take-home pay instantly.",
-    category: "salary",
+    category: "tax",
     icon: "💰",
-    slug: "/salary/monthly-salary-calculator/",
+    slug: "/tax/monthly-salary-calculator-malaysia/",
     colSpan: 6,
-  },
-  {
-    id: "salary-increment",
-    name: "Salary Increment Calculator",
-    description: "Calculate your new salary after increment or bonus",
-    category: "salary",
-    icon: "📈",
-    slug: "/salary/increment-calculator/",
-    colSpan: 3,
-  },
-  {
-    id: "overtime-calculator",
-    name: "Overtime Calculator Malaysia",
-    description: "Calculate overtime pay based on Malaysian labor law",
-    category: "salary",
-    icon: "⏰",
-    slug: "/salary/overtime-calculator/",
-    colSpan: 3,
   },
 
   // CGPA CALCULATORS
   {
     id: "cgpa-calculator",
-    name: "CGPA Calculator Malaysia",
+    name: "CGPA Calculator UIA",
     description: "Calculate your cumulative grade point average for Malaysian universities. Supports 4.0 and 5.0 grading scales.",
     category: "cgpa",
     icon: "🎓",
-    slug: "/education/cgpa-calculator-malaysia/",
+    slug: "/cgpa/cgpa-calculator-uia/",
     colSpan: 6,
-  },
-  {
-    id: "gpa-calculator",
-    name: "GPA Calculator",
-    description: "Calculate semester GPA for Malaysian universities",
-    category: "cgpa",
-    icon: "📚",
-    slug: "/cgpa/gpa-calculator/",
-    colSpan: 4,
-  },
-  {
-    id: "pointer-calculator",
-    name: "Pointer Calculator",
-    description: "Convert grades to pointer for UiTM, UKM, UM, USM",
-    category: "cgpa",
-    icon: "🎯",
-    slug: "/cgpa/pointer-calculator/",
-    colSpan: 4,
   },
 ];
 
