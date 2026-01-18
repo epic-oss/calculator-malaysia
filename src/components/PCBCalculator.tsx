@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-
-const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
+import TaxConsultationCTA from "./TaxConsultationCTA";
 
 // Malaysia Tax Brackets (Chargeable Income)
 const TAX_BRACKETS = [
@@ -34,15 +33,6 @@ const EPF_RATES = [
   { label: "0% (Exempted)", value: 0 },
 ];
 
-interface CapturedCalculation {
-  monthlySalary: number;
-  monthlyPCB: number;
-  annualTax: number;
-  effectiveRate: number;
-  maritalStatus: string;
-  children: number;
-}
-
 export default function PCBCalculator() {
   const currentYear = new Date().getFullYear();
 
@@ -52,14 +42,6 @@ export default function PCBCalculator() {
   const [maritalStatus, setMaritalStatus] = useState<"single" | "married">("single");
   const [children, setChildren] = useState(0);
   const [spouseWorking, setSpouseWorking] = useState(true);
-
-  // Modal states
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState("");
-  const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
 
   const calculation = useMemo(() => {
     // Annual gross income
@@ -184,57 +166,6 @@ export default function PCBCalculator() {
       currency: "MYR",
       minimumFractionDigits: 2,
     }).format(amount);
-  };
-
-  const openModal = () => {
-    setCapturedCalc({
-      monthlySalary,
-      monthlyPCB: calculation.monthlyPCB,
-      annualTax: calculation.annualTax,
-      effectiveRate: calculation.effectiveRate,
-      maritalStatus,
-      children,
-    });
-    setShowModal(true);
-    setSubmitSuccess(false);
-    setSubmitError("");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError("");
-
-    try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          whatsapp: formData.phone,
-          email: formData.email,
-          calculator_type: "pcb_calculator",
-          monthly_salary: capturedCalc?.monthlySalary,
-          monthly_pcb: capturedCalc?.monthlyPCB,
-          annual_tax: capturedCalc?.annualTax,
-          effective_rate: capturedCalc?.effectiveRate,
-          marital_status: capturedCalc?.maritalStatus,
-          children: capturedCalc?.children,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-
-      if (response.ok) {
-        setSubmitSuccess(true);
-        setFormData({ name: "", phone: "", email: "" });
-      } else {
-        setSubmitError("Failed to submit. Please try again.");
-      }
-    } catch {
-      setSubmitError("Network error. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -486,146 +417,12 @@ export default function PCBCalculator() {
               </div>
 
               {/* CTA Card */}
-              <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl">🎯</span>
-                  <h3 className="text-lg font-bold text-slate-800">Perlukan Bantuan Cukai?</h3>
-                </div>
-                <ul className="space-y-2 mb-4">
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <span className="text-green-500 font-bold">✓</span>
-                    Semakan percuma dengan perunding cukai
-                  </li>
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <span className="text-green-500 font-bold">✓</span>
-                    Jimat masa dengan e-filing
-                  </li>
-                  <li className="flex items-center gap-2 text-sm text-slate-600">
-                    <span className="text-green-500 font-bold">✓</span>
-                    Maksimumkan pelepasan cukai anda
-                  </li>
-                </ul>
-                <button
-                  onClick={openModal}
-                  className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
-                >
-                  Dapatkan Nasihat Percuma
-                </button>
-              </div>
+              <TaxConsultationCTA lang="ms" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Lead Capture Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-100">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold text-slate-800">
-                  {submitSuccess ? "Terima Kasih! 🎉" : "Dapatkan Nasihat Cukai"}
-                </h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-                >
-                  <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6">
-              {submitSuccess ? (
-                <div className="text-center py-4">
-                  <div className="text-5xl mb-4">✅</div>
-                  <p className="text-slate-600 mb-4">
-                    Kami akan menghubungi anda dalam masa 24 jam untuk membincangkan strategi cukai anda.
-                  </p>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors"
-                  >
-                    Tutup
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit}>
-                  {/* Summary */}
-                  <div className="bg-slate-50 rounded-xl p-4 mb-6">
-                    <p className="text-sm text-slate-600 mb-2">Ringkasan PCB Anda:</p>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <span className="text-slate-500">Gaji Bulanan:</span>
-                        <span className="font-medium ml-1">{formatCurrency(capturedCalc?.monthlySalary || 0)}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-500">PCB Bulanan:</span>
-                        <span className="font-medium ml-1 text-blue-600">{formatCurrency(capturedCalc?.monthlyPCB || 0)}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Form Fields */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Nama</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Nama penuh anda"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">No. WhatsApp</label>
-                      <input
-                        type="tel"
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="012-3456789"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="email@contoh.com"
-                      />
-                    </div>
-                  </div>
-
-                  {submitError && (
-                    <p className="text-red-600 text-sm mt-4">{submitError}</p>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3 mt-6 bg-green-600 hover:bg-green-700 disabled:bg-slate-300 rounded-xl text-white font-semibold transition-colors"
-                  >
-                    {isSubmitting ? "Menghantar..." : "Hantar"}
-                  </button>
-
-                  <p className="text-xs text-slate-400 text-center mt-4">
-                    Maklumat anda selamat dan tidak akan dikongsi.
-                  </p>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

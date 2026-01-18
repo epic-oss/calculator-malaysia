@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import TaxConsultationCTA from "./TaxConsultationCTA";
 
 const EPF_EMPLOYEE_RATES = [
   { label: "11% (Standard)", value: 0.11 },
@@ -44,6 +45,10 @@ const getEISContribution = (salary: number): { employee: number; employer: numbe
     employer: cappedSalary * 0.002,
   };
 };
+
+interface MonthlySalaryCalculatorProps {
+  lang?: "en" | "ms";
+}
 
 // Simplified PCB calculation based on annual income brackets
 const calculatePCB = (annualTaxableIncome: number): number => {
@@ -89,7 +94,7 @@ const calculatePCB = (annualTaxableIncome: number): number => {
   return tax / 12;
 };
 
-export default function MonthlySalaryCalculator() {
+export default function MonthlySalaryCalculator({ lang = "en" }: MonthlySalaryCalculatorProps) {
   const [grossSalary, setGrossSalary] = useState(5000);
   const [epfRate, setEpfRate] = useState(0.11);
   const [socsoCategory, setSocsoCategory] = useState(1);
@@ -389,6 +394,9 @@ export default function MonthlySalaryCalculator() {
                 )}
               </div>
 
+              {/* Tax Consultation CTA */}
+              <TaxConsultationCTA lang={lang} />
+
               {/* Financial Tools for You */}
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 mt-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -403,7 +411,7 @@ export default function MonthlySalaryCalculator() {
                       <span className="text-2xl">💵</span>
                       <div className="flex-1">
                         <p className="font-semibold text-slate-800 text-sm">Personal Loan Eligibility</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1 mb-3">
                           You may qualify for loans up to{" "}
                           <span className="font-bold text-emerald-600">
                             {formatCurrency(grossSalary * 4)}
@@ -411,7 +419,7 @@ export default function MonthlySalaryCalculator() {
                         </p>
                         <Link
                           href="/loan/personal-loan-calculator-malaysia/"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 mt-3 transition-colors"
+                          className="inline-flex items-center gap-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-colors"
                         >
                           Check Eligibility
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -428,14 +436,14 @@ export default function MonthlySalaryCalculator() {
                       <span className="text-2xl">💳</span>
                       <div className="flex-1">
                         <p className="font-semibold text-slate-800 text-sm">Credit Cards for You</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1 mb-3">
                           Find cards that match your income level
                         </p>
                         <a
                           href="https://invl.me/cln69f8"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 mt-3 transition-colors"
+                          className="inline-flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
                         >
                           Compare Cards
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

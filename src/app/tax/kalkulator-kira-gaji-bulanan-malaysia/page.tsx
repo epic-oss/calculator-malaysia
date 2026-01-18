@@ -44,7 +44,7 @@ export default function MonthlySalaryCalculatorPage() {
         </div>
       </div>
 
-      <MonthlySalaryCalculator />
+      <MonthlySalaryCalculator lang="ms" />
 
       {/* SEO Content Section */}
       <section className="bg-white border-t border-slate-100">

@@ -70,13 +70,11 @@ export default function MotorcycleInsuranceCTA({ lang = "en" }: MotorcycleInsura
       </a>
       <div className="mt-4 pt-3 border-t border-slate-100">
         <p className="text-xs text-slate-500 mb-2">{t.paymentLabel}</p>
-        <div className="flex flex-wrap gap-2">
-          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">Atome</span>
-          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">GrabPay</span>
-          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">ShopeePay</span>
-          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">TNG eWallet</span>
-          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">FPX</span>
-        </div>
+        <img
+          src="/images/payment-logos/bnpl-providers.avif"
+          alt="Atome, GrabPay, ShopeePay, TNG eWallet, FPX"
+          className="h-6 object-contain"
+        />
       </div>
     </div>
   );

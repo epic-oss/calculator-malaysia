@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-
-const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
+import TaxConsultationCTA from "./TaxConsultationCTA";
 
 const EMPLOYEE_CONTRIBUTION_RATES = [
   { label: "11% (Standard)", value: 0.11 },
@@ -24,17 +23,6 @@ export default function EPFCalculator() {
   const [monthlySalary, setMonthlySalary] = useState(5000);
   const [employeeRate, setEmployeeRate] = useState(0.11);
   const [dividendRate, setDividendRate] = useState(5.5);
-
-  // Lead capture modal state
-  const [showLeadModal, setShowLeadModal] = useState(false);
-  const [leadFormData, setLeadFormData] = useState({
-    name: "",
-    whatsapp: "",
-    email: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState("");
 
   const calculation = useMemo(() => {
     // Employer contribution rate based on salary
@@ -113,52 +101,6 @@ export default function EPFCalculator() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const handleLeadSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError("");
-
-    const payload = {
-      timestamp: new Date().toISOString(),
-      name: leadFormData.name,
-      whatsapp: leadFormData.whatsapp,
-      email: leadFormData.email,
-      calculator_type: "epf_insurance_lead",
-      current_epf_balance: currentBalance,
-      monthly_salary: monthlySalary,
-      projected_balance: Math.round(calculation.projectedBalance),
-      retirement_age: retirementAge,
-      source_url: typeof window !== "undefined" ? window.location.href : "",
-    };
-
-    try {
-      const response = await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        setSubmitSuccess(true);
-        setLeadFormData({ name: "", whatsapp: "", email: "" });
-      } else {
-        setSubmitError("Something went wrong. Please try again.");
-      }
-    } catch {
-      setSubmitError("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const closeModal = () => {
-    setShowLeadModal(false);
-    setSubmitSuccess(false);
-    setSubmitError("");
   };
 
   return (
@@ -504,49 +446,26 @@ export default function EPFCalculator() {
                 </div>
               </div>
 
-              {/* Retirement Planning Tools */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xl">🏖️</span>
-                  <h3 className="font-semibold text-slate-800">Retirement Planning Tools</h3>
-                </div>
+              {/* Tax Consultation CTA */}
+              <TaxConsultationCTA lang="en" />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Protect Your Retirement Box */}
-                  <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
-                    <div className="flex items-start gap-3 flex-1">
-                      <span className="text-2xl">🛡️</span>
-                      <div className="flex-1">
-                        <p className="font-semibold text-slate-800 text-sm">Protect Your Retirement</p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          EPF alone may not be enough. Get life & medical insurance for extra security.
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setShowLeadModal(true)}
-                      className="block w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700 transition-all mt-auto"
-                    >
-                      Get Free Quote
-                    </button>
-                  </div>
-
-                  {/* Salary Calculator Box */}
-                  <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
-                    <div className="flex items-start gap-3 flex-1">
-                      <span className="text-2xl">📊</span>
-                      <div className="flex-1">
-                        <p className="font-semibold text-slate-800 text-sm">Calculate Your Net Salary</p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          See your actual take-home pay after all deductions
-                        </p>
-                      </div>
-                    </div>
+              {/* Related Calculator */}
+              <div className="bg-white rounded-xl p-4 border border-slate-200 mt-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">📊</span>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800 text-sm">Calculate Your Net Salary</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      See your actual take-home pay after all deductions
+                    </p>
                     <Link
-                      href="/salary/monthly-salary-calculator/"
-                      className="block w-full py-2.5 px-4 rounded-lg bg-teal-600 text-white text-sm font-medium text-center hover:bg-teal-700 transition-all mt-auto"
+                      href="/tax/monthly-salary-calculator-malaysia/"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-teal-600 hover:text-teal-700 mt-2 transition-colors"
                     >
                       Salary Calculator
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   </div>
                 </div>
@@ -556,121 +475,6 @@ export default function EPFCalculator() {
         </div>
       </div>
 
-      {/* Lead Capture Modal */}
-      {showLeadModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
-            {/* Close button */}
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {!submitSuccess ? (
-              <>
-                <div className="text-center mb-6">
-                  <span className="text-4xl">🛡️</span>
-                  <h3 className="text-xl font-bold text-slate-800 mt-3">Get Your Free Insurance Quote</h3>
-                  <p className="text-sm text-slate-500 mt-1">
-                    Our advisor will contact you within 24 hours
-                  </p>
-                </div>
-
-                <form onSubmit={handleLeadSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={leadFormData.name}
-                      onChange={(e) => setLeadFormData({ ...leadFormData, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="Your full name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Number</label>
-                    <input
-                      type="tel"
-                      required
-                      value={leadFormData.whatsapp}
-                      onChange={(e) => setLeadFormData({ ...leadFormData, whatsapp: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="e.g. 0123456789"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={leadFormData.email}
-                      onChange={(e) => setLeadFormData({ ...leadFormData, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-
-                  {/* Pre-filled EPF Info */}
-                  <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-                    <p className="text-xs font-medium text-slate-600 mb-2">Your EPF Details (Pre-filled)</p>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-500">Current EPF Balance:</span>
-                      <span className="text-slate-700 font-medium">{formatCurrency(currentBalance)}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-500">Monthly Salary:</span>
-                      <span className="text-slate-700 font-medium">{formatCurrency(monthlySalary)}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-slate-500">Projected at Retirement:</span>
-                      <span className="text-blue-600 font-medium">{formatCurrency(calculation.projectedBalance)}</span>
-                    </div>
-                  </div>
-
-                  {submitError && (
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">
-                      {submitError}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3 px-4 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Submitting..." : "Get Free Quote"}
-                  </button>
-
-                  <p className="text-xs text-slate-400 text-center">
-                    By submitting, you agree to be contacted by our insurance advisor.
-                  </p>
-                </form>
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <span className="text-5xl">✅</span>
-                <h3 className="text-xl font-bold text-slate-800 mt-4">Thank You!</h3>
-                <p className="text-slate-600 mt-2">
-                  Our insurance advisor will WhatsApp you within 24 hours.
-                </p>
-                <button
-                  onClick={closeModal}
-                  className="mt-6 py-2.5 px-6 rounded-xl bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 transition-all"
-                >
-                  Close
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
