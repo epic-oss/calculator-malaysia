@@ -1,6 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import MotorcycleInsuranceCTA from "./MotorcycleInsuranceCTA";
+
+interface MotorcycleInsuranceCalculatorProps {
+  lang?: "en" | "ms";
+}
 
 const ENGINE_CC_OPTIONS = [
   { label: "Below 150cc", value: 75, roadTax: 2 },
@@ -23,7 +28,7 @@ const NCD_OPTIONS = [
 const SST_RATE = 0.08;
 const STAMP_DUTY = 10;
 
-export default function MotorcycleInsuranceCalculator() {
+export default function MotorcycleInsuranceCalculator({ lang = "en" }: MotorcycleInsuranceCalculatorProps) {
   const [engineCC, setEngineCC] = useState(ENGINE_CC_OPTIONS[0].value);
   const [vehicleAge, setVehicleAge] = useState(0);
   const [ncdDiscount, setNcdDiscount] = useState(0);
@@ -353,37 +358,7 @@ export default function MotorcycleInsuranceCalculator() {
                 </div>
 
                 {/* CTA Card - Bjak Affiliate */}
-                <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">🎯</span>
-                    <h3 className="text-lg font-bold text-slate-800">Get Free Quote</h3>
-                  </div>
-                  <ul className="space-y-2 mb-4">
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <span className="text-green-500 font-bold">✓</span>
-                      Compare prices from 15+ insurers
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <span className="text-green-500 font-bold">✓</span>
-                      Save up to 25% vs direct purchase
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
-                      <span className="text-green-500 font-bold">✓</span>
-                      Free claims assistance
-                    </li>
-                  </ul>
-                  <a
-                    href="https://bjak.my/en/motorcycle-insurance?p=OOI-YING-JYE-AT9T1T"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                  >
-                    Get Free Quote
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
+                <MotorcycleInsuranceCTA lang={lang} />
               </div>
             </div>
           </div>

@@ -40,7 +40,7 @@ export default function KalkulatorInsuransMotorPage() {
         </div>
       </div>
 
-      <MotorcycleInsuranceCalculator />
+      <MotorcycleInsuranceCalculator lang="ms" />
 
       {/* SEO Content Section */}
       <section className="bg-white border-t border-slate-100">
