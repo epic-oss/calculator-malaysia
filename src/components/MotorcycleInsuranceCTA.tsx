@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 const BJAK_AFFILIATE_URL = "https://bjak.my/en/motorcycle-insurance?p=OOI-YING-JYE-AT9T1T";
 
 interface MotorcycleInsuranceCTAProps {
@@ -31,19 +29,30 @@ const content = {
   },
 };
 
+// Bjak logo as inline SVG
+function BjakLogo() {
+  return (
+    <svg width="60" height="20" viewBox="0 0 60 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="16" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#1E40AF">
+        bjak
+      </text>
+    </svg>
+  );
+}
+
 export default function MotorcycleInsuranceCTA({ lang = "en" }: MotorcycleInsuranceCTAProps) {
   const t = content[lang];
 
   return (
     <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl">🎯</span>
+        <BjakLogo />
         <h3 className="text-lg font-bold text-slate-800">{t.heading}</h3>
       </div>
       <ul className="space-y-2 mb-4">
         {t.bullets.map((bullet, index) => (
           <li key={index} className="flex items-center gap-2 text-sm text-slate-600">
-            <span className="text-green-500 font-bold">✓</span>
+            <span className="text-blue-600 font-bold">✓</span>
             {bullet}
           </li>
         ))}
@@ -52,7 +61,7 @@ export default function MotorcycleInsuranceCTA({ lang = "en" }: MotorcycleInsura
         href={BJAK_AFFILIATE_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 bg-blue-700 hover:bg-blue-800 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
       >
         {t.button}
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,13 +70,13 @@ export default function MotorcycleInsuranceCTA({ lang = "en" }: MotorcycleInsura
       </a>
       <div className="mt-4 pt-3 border-t border-slate-100">
         <p className="text-xs text-slate-500 mb-2">{t.paymentLabel}</p>
-        <Image
-          src="/images/bnpl-providers.avif"
-          alt="Payment providers - Atome, GrabPay, ShopeePay, Touch n Go"
-          width={300}
-          height={30}
-          className="h-[30px] w-auto"
-        />
+        <div className="flex flex-wrap gap-2">
+          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">Atome</span>
+          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">GrabPay</span>
+          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">ShopeePay</span>
+          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">TNG eWallet</span>
+          <span className="px-2 py-1 bg-slate-100 rounded text-xs font-medium text-slate-600">FPX</span>
+        </div>
       </div>
     </div>
   );
