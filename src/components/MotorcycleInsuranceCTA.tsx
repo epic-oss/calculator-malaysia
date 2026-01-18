@@ -73,7 +73,6 @@ export default function MotorcycleInsuranceCTA({ lang = "en" }: MotorcycleInsura
         <img
           src="/images/payment-logos/bnpl-providers.avif"
           alt="Atome, GrabPay, ShopeePay, TNG eWallet, FPX"
-          className="h-6 object-contain"
         />
       </div>
     </div>
