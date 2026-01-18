@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from "react";
 
-const BJAK_AFFILIATE_URL = "https://bjak.my/?p=OOI-YING-JYE-AT9T1T";
-
 const ENGINE_CC_OPTIONS = [
   { label: "Below 150cc", value: 75, roadTax: 2 },
   { label: "150cc - 200cc", value: 175, roadTax: 30 },
@@ -89,10 +87,6 @@ export default function MotorcycleInsuranceCalculator() {
       currency: "MYR",
       minimumFractionDigits: 2,
     }).format(amount);
-  };
-
-  const handleGetQuote = () => {
-    window.open(BJAK_AFFILIATE_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
