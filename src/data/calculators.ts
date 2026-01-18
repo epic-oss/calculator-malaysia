@@ -232,6 +232,15 @@ export const calculators: Calculator[] = [
     slug: "/tax/monthly-salary-calculator-malaysia/",
     colSpan: 6,
   },
+  {
+    id: "sspa-calculator",
+    name: "Kalkulator SSPA Malaysia",
+    description: "Kira gaji baharu SSPA untuk penjawat awam. Lihat kenaikan Fasa 1 & 2, KGT mengikut gred.",
+    category: "tax",
+    icon: "🏛️",
+    slug: "/tax/sspa-calculator-malaysia/",
+    colSpan: 6,
+  },
 
   // CGPA CALCULATORS
   {
