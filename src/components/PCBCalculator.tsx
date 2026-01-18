@@ -489,27 +489,27 @@ export default function PCBCalculator() {
               <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-2xl">🎯</span>
-                  <h3 className="text-lg font-bold text-slate-800">Dapatkan Nasihat Percuma</h3>
+                  <h3 className="text-lg font-bold text-slate-800">Perlukan Bantuan Cukai?</h3>
                 </div>
                 <ul className="space-y-2 mb-4">
                   <li className="flex items-center gap-2 text-sm text-slate-600">
                     <span className="text-green-500 font-bold">✓</span>
-                    Semakan PCB oleh pakar cukai
+                    Semakan percuma dengan perunding cukai
                   </li>
                   <li className="flex items-center gap-2 text-sm text-slate-600">
                     <span className="text-green-500 font-bold">✓</span>
-                    Tips jimat cukai yang sah
+                    Jimat masa dengan e-filing
                   </li>
                   <li className="flex items-center gap-2 text-sm text-slate-600">
                     <span className="text-green-500 font-bold">✓</span>
-                    Bantuan e-Filing percuma
+                    Maksimumkan pelepasan cukai anda
                   </li>
                 </ul>
                 <button
                   onClick={openModal}
                   className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
                 >
-                  Hubungi Pakar Cukai
+                  Dapatkan Nasihat Percuma
                 </button>
               </div>
             </div>
