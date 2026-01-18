@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     icon: "/logo.webp",
     apple: "/logo.webp",
   },
+  verification: {
+    google: "pHajTQEkVWLylkbCmtJAgVL_pq6N1Mk_UJpJO8v2J6o",
+  },
 };
 
 export default function RootLayout({
