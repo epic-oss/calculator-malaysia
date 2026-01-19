@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import InsurersLogoCarousel from "./InsurersLogoCarousel";
 
 const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
 
@@ -767,6 +768,11 @@ export default function EVInsuranceCalculator() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Insurers Logo Carousel */}
+        <div className="mt-12 bg-white rounded-2xl shadow-sm p-6">
+          <InsurersLogoCarousel lang="en" />
         </div>
       </div>
 

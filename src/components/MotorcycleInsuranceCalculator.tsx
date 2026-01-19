@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import MotorcycleInsuranceCTA from "./MotorcycleInsuranceCTA";
+import InsurersLogoCarousel from "./InsurersLogoCarousel";
 
 interface MotorcycleInsuranceCalculatorProps {
   lang?: "en" | "ms";
@@ -368,6 +369,11 @@ export default function MotorcycleInsuranceCalculator({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Insurers Logo Carousel */}
+        <div className="mt-12 bg-white rounded-2xl shadow-sm p-6">
+          <InsurersLogoCarousel lang={lang} />
         </div>
       </div>
     </div>
