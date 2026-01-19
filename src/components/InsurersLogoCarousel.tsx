@@ -13,7 +13,7 @@ const INSURERS = [
   { name: "Etiqa", logo: "/insurer/etiqa.png" },
   { name: "Zurich", logo: "/insurer/zurich.png" },
   { name: "Zurich Takaful", logo: "/insurer/Zurich Takaful.png" },
-  { name: "Tokio Marine", logo: null },
+  { name: "Tokio Marine", logo: "/insurer/tokio marine.jpeg" },
   { name: "AXA", logo: "/insurer/Axa.png" },
   { name: "Tune Protect", logo: "/insurer/Tune Protect.png" },
   { name: "RHB Insurance", logo: "/insurer/RHB Insurance.jpeg" },
