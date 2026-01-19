@@ -92,7 +92,7 @@ export default function InsurersLogoCarousel({ lang = "en" }: InsurersLogoCarous
           {duplicatedInsurers.map((insurer, index) => (
             <div
               key={`${insurer.name}-${index}`}
-              className="flex-shrink-0 flex items-center justify-center h-12 px-4 transition-all duration-300 grayscale hover:grayscale-0 opacity-60 hover:opacity-100"
+              className="flex-shrink-0 flex items-center justify-center h-12 px-4"
             >
               {insurer.logo ? (
                 <Image
