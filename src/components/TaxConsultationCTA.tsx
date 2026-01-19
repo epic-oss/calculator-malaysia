@@ -8,6 +8,14 @@ interface TaxConsultationCTAProps {
 
 const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
 
+const SERVICE_OPTIONS = [
+  { value: "e-filing", labelEn: "E-filing Assistance", labelMs: "Bantuan e-Filing" },
+  { value: "tax-planning", labelEn: "Tax Planning", labelMs: "Perancangan Cukai" },
+  { value: "ssm-registration", labelEn: "SSM/Company Registration", labelMs: "Pendaftaran SSM/Syarikat" },
+  { value: "bookkeeping", labelEn: "Bookkeeping", labelMs: "Perakaunan" },
+  { value: "other", labelEn: "Other", labelMs: "Lain-lain" },
+];
+
 const content = {
   en: {
     heading: "Need Tax Help?",
@@ -21,6 +29,7 @@ const content = {
       name: "Name",
       whatsapp: "WhatsApp",
       email: "Email",
+      serviceType: "Service Needed",
       submit: "Submit",
       submitting: "Submitting...",
     },
@@ -42,6 +51,7 @@ const content = {
       name: "Nama",
       whatsapp: "WhatsApp",
       email: "Emel",
+      serviceType: "Perkhidmatan Diperlukan",
       submit: "Hantar",
       submitting: "Menghantar...",
     },
@@ -63,6 +73,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
     name: "",
     whatsapp: "",
     email: "",
+    serviceType: "e-filing",
   });
 
   const openModal = () => {
@@ -73,7 +84,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
 
   const closeModal = () => {
     setShowModal(false);
-    setFormData({ name: "", whatsapp: "", email: "" });
+    setFormData({ name: "", whatsapp: "", email: "", serviceType: "e-filing" });
     setIsSuccess(false);
     setError("");
   };
@@ -90,7 +101,10 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          whatsapp: formData.whatsapp,
+          email: formData.email,
+          service_type: formData.serviceType,
           calculator_type: "accounting",
           language: lang,
           timestamp: new Date().toISOString(),
@@ -99,7 +113,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
 
       if (response.ok) {
         setIsSuccess(true);
-        setFormData({ name: "", whatsapp: "", email: "" });
+        setFormData({ name: "", whatsapp: "", email: "", serviceType: "e-filing" });
       } else {
         setError(t.error);
       }
@@ -199,6 +213,24 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      {t.formLabels.serviceType}
+                    </label>
+                    <select
+                      required
+                      value={formData.serviceType}
+                      onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    >
+                      {SERVICE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {lang === "ms" ? option.labelMs : option.labelEn}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {error && (

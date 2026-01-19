@@ -22,7 +22,7 @@ const INSURERS = [
   { name: "Takaful Malaysia", logo: "/insurer/Takaful Malaysia.png" },
   { name: "Takaful Ikhlas", logo: "/insurer/Takaful Ikhlas.jpeg" },
   { name: "Lonpac", logo: "/insurer/lonpac.png" },
-  { name: "Berjaya Sompo", logo: null },
+  { name: "Berjaya Sompo", logo: "/insurer/berjaya sompo.png" },
   { name: "MSIG", logo: "/insurer/msig.png" },
   { name: "AmGeneral", logo: "/insurer/kurnia.png" },
   { name: "Liberty", logo: "/insurer/Liberty.png" },

@@ -564,46 +564,46 @@ export default function QuitRentCalculator() {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Refinance & Save Box */}
                   <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col h-full">
-                    <div className="flex items-start gap-3 flex-1">
+                    <div className="flex items-start gap-3">
                       <span className="text-2xl">💰</span>
-                      <div className="flex-1 flex flex-col">
+                      <div>
                         <p className="font-semibold text-slate-800 text-sm">Refinance & Save</p>
-                        <p className="text-xs text-slate-500 mt-1 flex-1">
+                        <p className="text-xs text-slate-500 mt-1">
                           Homeowners are saving RM200-500/month by refinancing to lower rates
                         </p>
-                        <button
-                          onClick={() => setShowRefinanceModal(true)}
-                          className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg mt-3 transition-colors"
-                        >
-                          Check Your Savings
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
                       </div>
                     </div>
+                    <button
+                      onClick={() => setShowRefinanceModal(true)}
+                      className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg mt-auto transition-colors"
+                    >
+                      Check Your Savings
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
                   </div>
 
                   {/* Home Insurance Box */}
                   <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col h-full">
-                    <div className="flex items-start gap-3 flex-1">
+                    <div className="flex items-start gap-3">
                       <span className="text-2xl">🏡</span>
-                      <div className="flex-1 flex flex-col">
+                      <div>
                         <p className="font-semibold text-slate-800 text-sm">Home Insurance</p>
-                        <p className="text-xs text-slate-500 mt-1 flex-1">
+                        <p className="text-xs text-slate-500 mt-1">
                           Protect your property from flood, fire & theft
                         </p>
-                        <button
-                          onClick={() => setShowInsuranceModal(true)}
-                          className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg mt-3 transition-colors"
-                        >
-                          Get Quote
-                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
                       </div>
                     </div>
+                    <button
+                      onClick={() => setShowInsuranceModal(true)}
+                      className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg mt-auto transition-colors"
+                    >
+                      Get Quote
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
