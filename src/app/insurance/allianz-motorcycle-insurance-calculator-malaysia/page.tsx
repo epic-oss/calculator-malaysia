@@ -2,20 +2,25 @@ import MotorcycleInsuranceCalculator from "@/components/MotorcycleInsuranceCalcu
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 
+const currentYear = new Date().getFullYear();
+
 export const metadata = {
-  title: "Allianz Motorcycle Insurance Calculator Malaysia 2026 | Get Quote",
+  title: `Allianz Motorcycle Insurance Calculator Malaysia ${currentYear} - Kira Premium`,
   description:
-    "Calculate Allianz motorcycle insurance premium instantly. Compare comprehensive vs third party coverage. Get the best quote for your motorcycle.",
+    "Kalkulator insurans motor Allianz Malaysia. Kira premium insurans motor anda, bandingkan harga dan renew dengan diskaun NCD sehingga 55%.",
   keywords: [
     "allianz motorcycle insurance",
     "allianz motor insurance malaysia",
     "allianz bike insurance",
     "allianz motorcycle quote",
     "allianz comprehensive motorcycle",
+    "kalkulator insurans motor allianz",
   ],
 };
 
 export default function AllianzMotorcycleInsurancePage() {
+  const year = new Date().getFullYear();
+
   return (
     <div>
       <Navbar />
@@ -40,7 +45,10 @@ export default function AllianzMotorcycleInsurancePage() {
         </div>
       </div>
 
-      <MotorcycleInsuranceCalculator />
+      <MotorcycleInsuranceCalculator
+        title={`Allianz Motorcycle Insurance Calculator Malaysia ${year}`}
+        subtitle="Kira premium insurans motor Allianz anda di Malaysia"
+      />
 
       {/* SEO Content Section */}
       <section className="bg-white border-t border-slate-100">

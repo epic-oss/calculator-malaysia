@@ -5,6 +5,8 @@ import MotorcycleInsuranceCTA from "./MotorcycleInsuranceCTA";
 
 interface MotorcycleInsuranceCalculatorProps {
   lang?: "en" | "ms";
+  title?: string;
+  subtitle?: string;
 }
 
 const ENGINE_CC_OPTIONS = [
@@ -28,7 +30,11 @@ const NCD_OPTIONS = [
 const SST_RATE = 0.08;
 const STAMP_DUTY = 10;
 
-export default function MotorcycleInsuranceCalculator({ lang = "en" }: MotorcycleInsuranceCalculatorProps) {
+export default function MotorcycleInsuranceCalculator({
+  lang = "en",
+  title = "Motorcycle Insurance Calculator",
+  subtitle = "Calculate your motorcycle insurance premium in Malaysia"
+}: MotorcycleInsuranceCalculatorProps) {
   const [engineCC, setEngineCC] = useState(ENGINE_CC_OPTIONS[0].value);
   const [vehicleAge, setVehicleAge] = useState(0);
   const [ncdDiscount, setNcdDiscount] = useState(0);
@@ -98,10 +104,10 @@ export default function MotorcycleInsuranceCalculator({ lang = "en" }: Motorcycl
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">
-          Motorcycle Insurance Calculator
+          {title}
         </h1>
         <p className="text-center text-slate-500 mb-8">
-          Calculate your motorcycle insurance premium in Malaysia
+          {subtitle}
         </p>
 
         <div className="flex flex-col lg:flex-row gap-8">
