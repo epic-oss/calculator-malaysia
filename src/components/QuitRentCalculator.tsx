@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
+
+const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
 
 const PROPERTY_TYPES = [
   { label: "Residential (Kediaman)", value: "residential" },
@@ -25,6 +26,22 @@ const STATES = [
   { label: "Perlis", value: "perlis" },
   { label: "Sabah", value: "sabah" },
   { label: "Sarawak", value: "sarawak" },
+];
+
+const BANKS = [
+  "Maybank",
+  "CIMB",
+  "Public Bank",
+  "RHB",
+  "Hong Leong",
+  "AmBank",
+  "Other",
+];
+
+const PROPERTY_TYPE_OPTIONS = [
+  { label: "Landed", value: "landed" },
+  { label: "Condo", value: "condo" },
+  { label: "Apartment", value: "apartment" },
 ];
 
 // Quit rent rates per sq ft (approximate - actual rates vary by district)
@@ -117,76 +134,62 @@ const QUIT_RENT_RATES: Record<string, Record<string, { rate: number; minCharge: 
 };
 
 // Payment deadlines and penalty info by state
-const STATE_INFO: Record<string, { deadline: string; penalty: string; paymentPortal: string }> = {
+const STATE_INFO: Record<string, { deadline: string; penalty: string }> = {
   selangor: {
     deadline: "31 May",
     penalty: "Late payment penalty of 5% after deadline, additional 1% per month (max 12%)",
-    paymentPortal: "https://ebayar.selangor.gov.my",
   },
   kl: {
     deadline: "28/29 February",
     penalty: "6% penalty after deadline",
-    paymentPortal: "https://ehasil.hasil.gov.my",
   },
   penang: {
     deadline: "31 May",
     penalty: "6% penalty after deadline, additional charges may apply",
-    paymentPortal: "https://ebayar.penang.gov.my",
   },
   johor: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptgj.johor.gov.my",
   },
   perak: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.perak.gov.my",
   },
   ns: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptgns.ns.gov.my",
   },
   melaka: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.melaka.gov.my",
   },
   kedah: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.kedah.gov.my",
   },
   pahang: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.pahang.gov.my",
   },
   terengganu: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.terengganu.gov.my",
   },
   kelantan: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.kelantan.gov.my",
   },
   perlis: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://ptg.perlis.gov.my",
   },
   sabah: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://www.jtu.sabah.gov.my",
   },
   sarawak: {
     deadline: "31 May",
     penalty: "5% penalty after deadline",
-    paymentPortal: "https://landsurvey.sarawak.gov.my",
   },
 };
 
@@ -195,6 +198,33 @@ export default function QuitRentCalculator() {
   const [landArea, setLandArea] = useState(1500);
   const [state, setState] = useState("selangor");
   const [propertyValue, setPropertyValue] = useState(500000);
+
+  // Modal states
+  const [showRefinanceModal, setShowRefinanceModal] = useState(false);
+  const [showInsuranceModal, setShowInsuranceModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{ show: boolean; type: "success" | "error"; message: string }>({
+    show: false,
+    type: "success",
+    message: "",
+  });
+
+  // Refinance form state
+  const [refinanceForm, setRefinanceForm] = useState({
+    name: "",
+    whatsapp: "+60",
+    currentBank: "Maybank",
+    outstandingLoan: 300000,
+    propertyType: "landed",
+  });
+
+  // Insurance form state
+  const [insuranceForm, setInsuranceForm] = useState({
+    name: "",
+    whatsapp: "+60",
+    propertyType: "landed",
+    propertyValue: 500000,
+  });
 
   const calculation = useMemo(() => {
     const rates = QUIT_RENT_RATES[state]?.[propertyType] || { rate: 0.03, minCharge: 10 };
@@ -214,7 +244,6 @@ export default function QuitRentCalculator() {
       totalIfLate,
       deadline: stateInfo.deadline,
       penaltyInfo: stateInfo.penalty,
-      paymentPortal: stateInfo.paymentPortal,
       ratePerSqFt: rates.rate,
       minCharge: rates.minCharge,
     };
@@ -234,6 +263,95 @@ export default function QuitRentCalculator() {
 
   const getPropertyTypeName = (typeValue: string) => {
     return PROPERTY_TYPES.find((t) => t.value === typeValue)?.label || typeValue;
+  };
+
+  const showToast = (type: "success" | "error", message: string) => {
+    setToast({ show: true, type, message });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, show: false }));
+    }, 5000);
+  };
+
+  const handleRefinanceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const leadData = {
+      timestamp: new Date().toISOString(),
+      name: refinanceForm.name,
+      whatsapp: refinanceForm.whatsapp,
+      calculator_type: "refinance",
+      current_bank: refinanceForm.currentBank,
+      outstanding_loan: refinanceForm.outstandingLoan,
+      property_type: refinanceForm.propertyType,
+      source_url: typeof window !== "undefined" ? window.location.href : "",
+    };
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+
+      if (response.ok) {
+        setShowRefinanceModal(false);
+        setRefinanceForm({
+          name: "",
+          whatsapp: "+60",
+          currentBank: "Maybank",
+          outstandingLoan: 300000,
+          propertyType: "landed",
+        });
+        showToast("success", "Terima kasih! Kami akan hubungi anda dalam 24 jam.");
+      } else {
+        showToast("error", "Something went wrong. Please try again.");
+      }
+    } catch {
+      showToast("error", "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInsuranceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const leadData = {
+      timestamp: new Date().toISOString(),
+      name: insuranceForm.name,
+      whatsapp: insuranceForm.whatsapp,
+      calculator_type: "home_insurance",
+      property_type: insuranceForm.propertyType,
+      property_value: insuranceForm.propertyValue,
+      source_url: typeof window !== "undefined" ? window.location.href : "",
+    };
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+
+      if (response.ok) {
+        setShowInsuranceModal(false);
+        setInsuranceForm({
+          name: "",
+          whatsapp: "+60",
+          propertyType: "landed",
+          propertyValue: 500000,
+        });
+        showToast("success", "Terima kasih! Kami akan hubungi anda dalam 24 jam.");
+      } else {
+        showToast("error", "Something went wrong. Please try again.");
+      }
+    } catch {
+      showToast("error", "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -415,7 +533,7 @@ export default function QuitRentCalculator() {
                 </div>
 
                 {/* Penalty Info */}
-                <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4">
+                <div className="bg-red-50 border border-red-100 rounded-xl p-4">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">⚠️</div>
                     <div>
@@ -434,16 +552,6 @@ export default function QuitRentCalculator() {
                     </div>
                   </div>
                 </div>
-
-                {/* Online Payment Link */}
-                <a
-                  href={calculation.paymentPortal}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 px-4 rounded-xl bg-purple-600 text-white font-medium text-center hover:bg-purple-700 transition-all"
-                >
-                  Pay Online at {getStateName(state)} Portal →
-                </a>
               </div>
 
               {/* Property Owner Tools */}
@@ -453,49 +561,47 @@ export default function QuitRentCalculator() {
                   <h3 className="font-semibold text-slate-800">Tools for Property Owners</h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   {/* Refinance & Save Box */}
-                  <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="flex items-start gap-3">
+                  <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col h-full">
+                    <div className="flex items-start gap-3 flex-1">
                       <span className="text-2xl">💰</span>
-                      <div className="flex-1">
+                      <div className="flex-1 flex flex-col">
                         <p className="font-semibold text-slate-800 text-sm">Refinance & Save</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1 flex-1">
                           Homeowners are saving RM200-500/month by refinancing to lower rates
                         </p>
-                        <Link
-                          href="/loan/early-housing-loan-settlement-calculator-malaysia/"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:text-emerald-700 mt-3 transition-colors"
+                        <button
+                          onClick={() => setShowRefinanceModal(true)}
+                          className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg mt-3 transition-colors"
                         >
                           Check Your Savings
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Home Insurance Box */}
-                  <div className="bg-white rounded-xl p-4 border border-slate-200">
-                    <div className="flex items-start gap-3">
+                  <div className="bg-white rounded-xl p-4 border border-slate-200 flex flex-col h-full">
+                    <div className="flex items-start gap-3 flex-1">
                       <span className="text-2xl">🏡</span>
-                      <div className="flex-1">
+                      <div className="flex-1 flex flex-col">
                         <p className="font-semibold text-slate-800 text-sm">Home Insurance</p>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1 flex-1">
                           Protect your property from flood, fire & theft
                         </p>
-                        <a
-                          href="https://bjak.my/?p=OOI-YING-JYE-AT9T1T"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 mt-3 transition-colors"
+                        <button
+                          onClick={() => setShowInsuranceModal(true)}
+                          className="inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg mt-3 transition-colors"
                         >
                           Get Quote
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -505,6 +611,261 @@ export default function QuitRentCalculator() {
           </div>
         </div>
       </div>
+
+      {/* Refinance Modal */}
+      {showRefinanceModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-slate-800">Check Your Refinance Savings</h3>
+                <button
+                  onClick={() => setShowRefinanceModal(false)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={handleRefinanceSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={refinanceForm.name}
+                    onChange={(e) => setRefinanceForm({ ...refinanceForm, name: e.target.value })}
+                    placeholder="Your full name"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    WhatsApp Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={refinanceForm.whatsapp}
+                    onChange={(e) => setRefinanceForm({ ...refinanceForm, whatsapp: e.target.value })}
+                    placeholder="+60123456789"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Current Bank *
+                  </label>
+                  <select
+                    value={refinanceForm.currentBank}
+                    onChange={(e) => setRefinanceForm({ ...refinanceForm, currentBank: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  >
+                    {BANKS.map((bank) => (
+                      <option key={bank} value={bank}>
+                        {bank}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Outstanding Loan Amount: {formatCurrency(refinanceForm.outstandingLoan)}
+                  </label>
+                  <input
+                    type="range"
+                    value={refinanceForm.outstandingLoan}
+                    onChange={(e) => setRefinanceForm({ ...refinanceForm, outstandingLoan: Number(e.target.value) })}
+                    min={100000}
+                    max={1000000}
+                    step={10000}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  />
+                  <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>RM 100,000</span>
+                    <span>RM 1,000,000</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Property Type *
+                  </label>
+                  <div className="flex gap-2">
+                    {PROPERTY_TYPE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setRefinanceForm({ ...refinanceForm, propertyType: option.value })}
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                          refinanceForm.propertyType === option.value
+                            ? "bg-emerald-600 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
+                >
+                  {isSubmitting ? "Submitting..." : "Get Free Consultation"}
+                </button>
+              </form>
+
+              <p className="text-xs text-slate-400 text-center mt-4">
+                Our advisor will contact you within 24 hours with refinancing options.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Home Insurance Modal */}
+      {showInsuranceModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-slate-800">Get Home Insurance Quote</h3>
+                <button
+                  onClick={() => setShowInsuranceModal(false)}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={handleInsuranceSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={insuranceForm.name}
+                    onChange={(e) => setInsuranceForm({ ...insuranceForm, name: e.target.value })}
+                    placeholder="Your full name"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    WhatsApp Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={insuranceForm.whatsapp}
+                    onChange={(e) => setInsuranceForm({ ...insuranceForm, whatsapp: e.target.value })}
+                    placeholder="+60123456789"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Property Type *
+                  </label>
+                  <div className="flex gap-2">
+                    {PROPERTY_TYPE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setInsuranceForm({ ...insuranceForm, propertyType: option.value })}
+                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                          insuranceForm.propertyType === option.value
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Property Value: {formatCurrency(insuranceForm.propertyValue)}
+                  </label>
+                  <input
+                    type="range"
+                    value={insuranceForm.propertyValue}
+                    onChange={(e) => setInsuranceForm({ ...insuranceForm, propertyValue: Number(e.target.value) })}
+                    min={100000}
+                    max={2000000}
+                    step={10000}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  />
+                  <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <span>RM 100,000</span>
+                    <span>RM 2,000,000</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
+                >
+                  {isSubmitting ? "Submitting..." : "Get Free Quote"}
+                </button>
+              </form>
+
+              <p className="text-xs text-slate-400 text-center mt-4">
+                Our insurance advisor will contact you within 24 hours.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <div
+            className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg ${
+              toast.type === "success"
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+            }`}
+          >
+            <span className="text-xl">
+              {toast.type === "success" ? "✅" : "⚠️"}
+            </span>
+            <p className="font-medium">{toast.message}</p>
+            <button
+              onClick={() => setToast((prev) => ({ ...prev, show: false }))}
+              className="ml-2 p-1 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
