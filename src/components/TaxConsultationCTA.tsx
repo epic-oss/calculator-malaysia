@@ -107,6 +107,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
           service_type: formData.serviceType,
           calculator_type: "accounting",
           language: lang,
+          source_url: typeof window !== "undefined" ? window.location.href : "",
           timestamp: new Date().toISOString(),
         }),
       });
