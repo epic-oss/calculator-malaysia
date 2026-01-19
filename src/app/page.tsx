@@ -305,7 +305,9 @@ export default function Home() {
                                   ? "#ea580c"
                                   : cat.color === "red"
                                     ? "#dc2626"
-                                    : "#4f46e5",
+                                    : cat.color === "emerald"
+                                      ? "#059669"
+                                      : "#4f46e5",
                         color: "white",
                       }
                     : {}

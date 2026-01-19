@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "cgpa";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -17,6 +17,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   "credit-card": { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200" },
   tax: { bg: "bg-red-50", text: "text-red-600", border: "border-red-200" },
   salary: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
+  investment: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200" },
   cgpa: { bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200" },
 };
 
@@ -27,6 +28,7 @@ export const categoryLabels: Record<string, string> = {
   "credit-card": "Credit Cards",
   tax: "Tax & Salary",
   salary: "Salary",
+  investment: "Investment",
   cgpa: "CGPA",
 };
 
@@ -242,6 +244,17 @@ export const calculators: Calculator[] = [
     colSpan: 6,
   },
 
+  // INVESTMENT CALCULATORS
+  {
+    id: "asb-dividend",
+    name: "ASB Dividend Calculator",
+    description: "Kira dividen ASB anda berdasarkan kadar terkini 5.75%",
+    category: "investment",
+    icon: "📈",
+    slug: "/investment/kalkulator-dividen-asb-malaysia/",
+    colSpan: 6,
+  },
+
   // CGPA CALCULATORS
   {
     id: "cgpa-calculator",
@@ -260,5 +273,6 @@ export const categories = [
   { id: "property", label: "Property", color: "purple" },
   { id: "credit-card", label: "Credit Cards", color: "orange" },
   { id: "tax", label: "Tax & Salary", color: "red" },
+  { id: "investment", label: "Investment", color: "emerald" },
   { id: "cgpa", label: "CGPA", color: "indigo" },
 ];
