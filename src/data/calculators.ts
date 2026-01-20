@@ -292,6 +292,15 @@ export const calculators: Calculator[] = [
     slug: "/investment/kalkulator-dividen-asb-malaysia/",
     colSpan: 6,
   },
+  {
+    id: "gold-price-calculator",
+    name: "Kalkulator Harga Emas Malaysia",
+    description: "Kira nilai emas 916 dan 999 berdasarkan harga semasa. Semak harga emas hari ini.",
+    category: "investment",
+    icon: "🥇",
+    slug: "/investment/gold-price-calculator-malaysia/",
+    colSpan: 6,
+  },
 
   // CGPA CALCULATORS
   {
