@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomeLoanEligibilityCalculator from "@/components/HomeLoanEligibilityCalculator";
+import Navbar from "@/components/Navbar";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
 export default function HomeLoanEligibilityCalculatorPage() {
   return (
     <>
+      <Navbar />
       <HomeLoanEligibilityCalculator />
 
       {/* SEO Content Section */}
