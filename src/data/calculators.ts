@@ -296,6 +296,15 @@ export const calculators: Calculator[] = [
     slug: "/auto/car-refinance-calculator-malaysia/",
     colSpan: 6,
   },
+  {
+    id: "kalkulator-refinance-kereta",
+    name: "Kalkulator Refinance Kereta Malaysia",
+    description: "Kira berapa anda boleh jimat dengan refinance pinjaman kereta",
+    category: "auto",
+    icon: "🚗",
+    slug: "/auto/kalkulator-refinance-kereta-malaysia/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
