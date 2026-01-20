@@ -159,6 +159,15 @@ export const calculators: Calculator[] = [
 
   // PROPERTY CALCULATORS
   {
+    id: "refinance-calculator",
+    name: "Refinance Housing Loan Calculator",
+    description: "Calculate how much you can save by refinancing your home loan. Compare rates from 15+ banks.",
+    category: "property",
+    icon: "🏠",
+    slug: "/property/refinance-housing-loan-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
     id: "quit-rent",
     name: "Quit Rent Calculator Selangor (Cukai Tanah)",
     description: "Calculate quit rent for Selangor and all states. Check rates, deadlines, and pay online.",

@@ -1,0 +1,126 @@
+import { Metadata } from "next";
+import RefinanceCalculator from "@/components/RefinanceCalculator";
+
+const currentYear = new Date().getFullYear();
+
+export const metadata: Metadata = {
+  title: `Refinance Housing Loan Calculator Malaysia ${currentYear} - Calculate Your Savings`,
+  description: `Free refinance calculator Malaysia. Calculate how much you can save by refinancing your home loan. Compare latest rates from 15+ banks including Maybank, CIMB, Public Bank.`,
+  keywords: [
+    "refinance calculator malaysia",
+    "housing loan refinance",
+    "home loan refinance calculator",
+    "refinance savings calculator",
+    "mortgage refinance malaysia",
+    "bank refinance rates malaysia",
+    "refinancing home loan",
+    "loan refinancing calculator",
+  ],
+  openGraph: {
+    title: `Refinance Housing Loan Calculator Malaysia ${currentYear}`,
+    description: "Calculate how much you can save by refinancing your home loan. Compare latest rates from 15+ banks.",
+    type: "website",
+    locale: "en_MY",
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long does the refinancing process take?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Typically 2-3 months from application to disbursement. This includes property valuation, legal documentation, and loan processing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I refinance if I'm still in lock-in period?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, but you'll pay an early settlement penalty of 2-3% of the outstanding loan. Calculate if the savings still outweigh this penalty."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will refinancing affect my credit score?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "There will be a new credit inquiry, but the impact is minimal. Your score may even improve if you make timely payments on the new loan."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the minimum savings to make refinancing worthwhile?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Generally, aim for at least RM200-300 monthly savings with a break-even period under 3 years."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I refinance a property that has dropped in value?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, but your loan-to-value (LTV) ratio may be affected. If your property value has dropped significantly, you may get less favorable terms."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Islamic refinancing (refinancing-i) different?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The concept is similar, but Islamic financing uses profit rate instead of interest rate, and follows Shariah-compliant structures like Musharakah Mutanaqisah."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Zero Entry Cost refinancing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Some banks in Malaysia offer 'Zero Moving Cost' or 'Zero Entry Cost' packages where they cover legal fees, valuation fees, and stamp duty. This means you can refinance without any upfront payment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between refinance and repricing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Refinancing means moving your loan to a different bank with new terms and higher costs (legal fees, stamp duty). Repricing means negotiating a better rate with your current bank with minimal costs (admin fee only, ~RM200). Try repricing first before refinancing."
+      }
+    }
+  ]
+};
+
+const calculatorSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": `Refinance Housing Loan Calculator Malaysia ${currentYear}`,
+  "description": "Calculate how much you can save by refinancing your home loan in Malaysia",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "MYR"
+  }
+};
+
+export default function RefinanceCalculatorPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(calculatorSchema) }}
+      />
+      <RefinanceCalculator />
+    </>
+  );
+}
