@@ -167,6 +167,15 @@ export const calculators: Calculator[] = [
     slug: "/loans/personal-loan-refinance-calculator-malaysia/",
     colSpan: 6,
   },
+  {
+    id: "kalkulator-refinance-pinjaman-peribadi",
+    name: "Kalkulator Refinance Pinjaman Peribadi",
+    description: "Kira penjimatan dengan gabungkan hutang faedah tinggi. Bandingkan kadar dari 15+ bank.",
+    category: "loan",
+    icon: "💰",
+    slug: "/loans/kalkulator-refinance-pinjaman-peribadi/",
+    colSpan: 6,
+  },
 
   // PROPERTY CALCULATORS
   {
