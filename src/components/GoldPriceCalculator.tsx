@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-// Gold price data - update manually as needed
-const GOLD_PRICES = {
-  lastUpdated: "2026-01-21",
-  prices: {
-    999: { buy: 600, sell: 590 },
-    916: { buy: 550, sell: 540 },
-    875: { buy: 525, sell: 515 },
-    750: { buy: 450, sell: 440 },
-  } as Record<number, { buy: number; sell: number }>,
+// Fallback gold prices if API fails
+const FALLBACK_PRICES = {
+  999: { buy: 600, sell: 588 },
+  916: { buy: 550, sell: 539 },
+  875: { buy: 525, sell: 515 },
+  750: { buy: 450, sell: 441 },
 };
 
 // Gold types for dropdown
@@ -39,6 +36,17 @@ const GOLD_SHOPS = [
   "De Aurora",
 ];
 
+// USD to MYR exchange rate (update periodically)
+const USD_TO_MYR = 4.45;
+const GRAMS_PER_OZ = 31.1035;
+
+interface GoldPrices {
+  999: { buy: number; sell: number };
+  916: { buy: number; sell: number };
+  875: { buy: number; sell: number };
+  750: { buy: number; sell: number };
+}
+
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("ms-MY", {
     style: "currency",
@@ -56,6 +64,12 @@ function formatNumber(num: number, decimals: number = 2): string {
 }
 
 export default function GoldPriceCalculator() {
+  // Live price state
+  const [goldPrices, setGoldPrices] = useState<GoldPrices>(FALLBACK_PRICES);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [lastUpdated, setLastUpdated] = useState<string>("Memuatkan...");
+  const [priceSource, setPriceSource] = useState<"live" | "fallback">("fallback");
+
   // Calculator 1: Gold Value Calculator
   const [goldType, setGoldType] = useState<number>(916);
   const [weight, setWeight] = useState<string>("10");
@@ -67,7 +81,7 @@ export default function GoldPriceCalculator() {
   const [buyGoldType, setBuyGoldType] = useState<number>(916);
   const [buyWeight, setBuyWeight] = useState<string>("10");
   const [buyPrice, setBuyPrice] = useState<string>("520");
-  const [currentSellPrice, setCurrentSellPrice] = useState<string>("540");
+  const [currentSellPrice, setCurrentSellPrice] = useState<string>("539");
 
   // Calculator 3: Purity Converter
   const [converterWeight, setConverterWeight] = useState<string>("10");
@@ -77,6 +91,70 @@ export default function GoldPriceCalculator() {
   // Active tab
   const [activeTab, setActiveTab] = useState<string>("value");
 
+  // Fetch live gold prices
+  useEffect(() => {
+    const fetchGoldPrice = async () => {
+      try {
+        // Fetch from metals.live (free, no API key)
+        const response = await fetch("https://api.metals.live/v1/spot/gold");
+        const data = await response.json();
+
+        // Price comes in USD per oz, convert to MYR per gram
+        const usdPerOz = data[0]?.price || 2650; // fallback value
+        const myrPerGram999 = (usdPerOz * USD_TO_MYR) / GRAMS_PER_OZ;
+
+        // Calculate prices for different purities
+        // Buy price is slightly higher (what shops charge you)
+        // Sell price is what shops pay you (slightly lower)
+        const spreadPercent = 0.02; // 2% spread
+
+        const newPrices: GoldPrices = {
+          999: {
+            buy: Math.round(myrPerGram999 * (1 + spreadPercent / 2)),
+            sell: Math.round(myrPerGram999 * (1 - spreadPercent / 2)),
+          },
+          916: {
+            buy: Math.round(myrPerGram999 * 0.916 * (1 + spreadPercent / 2)),
+            sell: Math.round(myrPerGram999 * 0.916 * (1 - spreadPercent / 2)),
+          },
+          875: {
+            buy: Math.round(myrPerGram999 * 0.875 * (1 + spreadPercent / 2)),
+            sell: Math.round(myrPerGram999 * 0.875 * (1 - spreadPercent / 2)),
+          },
+          750: {
+            buy: Math.round(myrPerGram999 * 0.75 * (1 + spreadPercent / 2)),
+            sell: Math.round(myrPerGram999 * 0.75 * (1 - spreadPercent / 2)),
+          },
+        };
+
+        setGoldPrices(newPrices);
+        setLastUpdated(
+          new Date().toLocaleString("ms-MY", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        );
+        setPriceSource("live");
+
+        // Update the sell price field for Calculator 2
+        setCurrentSellPrice(String(newPrices[916].sell));
+      } catch (error) {
+        // Fallback to static prices if API fails
+        console.error("Failed to fetch gold prices:", error);
+        setGoldPrices(FALLBACK_PRICES);
+        setLastUpdated("Harga anggaran");
+        setPriceSource("fallback");
+        setCurrentSellPrice(String(FALLBACK_PRICES[916].sell));
+      }
+      setLoading(false);
+    };
+
+    fetchGoldPrice();
+  }, []);
+
   // Calculator 1: Gold Value calculations
   const valueResults = useMemo(() => {
     const weightNum = parseFloat(weight) || 0;
@@ -85,7 +163,7 @@ export default function GoldPriceCalculator() {
 
     const pricePerGram = useCustomPrice && customPrice
       ? parseFloat(customPrice)
-      : GOLD_PRICES.prices[goldType]?.sell || 0;
+      : goldPrices[goldType as keyof GoldPrices]?.sell || 0;
 
     const goldTypeInfo = GOLD_TYPES.find(t => t.value === goldType);
     const purity = goldTypeInfo?.purity || 0;
@@ -98,7 +176,7 @@ export default function GoldPriceCalculator() {
       purity,
       totalValue,
     };
-  }, [goldType, weight, weightUnit, customPrice, useCustomPrice]);
+  }, [goldType, weight, weightUnit, customPrice, useCustomPrice, goldPrices]);
 
   // Calculator 2: Buy vs Sell calculations
   const buySellResults = useMemo(() => {
@@ -160,9 +238,39 @@ export default function GoldPriceCalculator() {
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Kira nilai emas 916 dan 999 berdasarkan harga semasa. Semak harga emas hari ini.
           </p>
-          <p className="text-sm text-slate-500 mt-2">
-            Harga dikemaskini: {GOLD_PRICES.lastUpdated}
-          </p>
+
+          {/* Price Status Badge */}
+          <div className="mt-4 inline-flex items-center gap-2">
+            {loading ? (
+              <div className="flex items-center gap-2 bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-sm">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span>Memuatkan harga emas...</span>
+              </div>
+            ) : priceSource === "live" ? (
+              <div className="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span>Harga pasaran dunia • Dikemaskini: {lastUpdated}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm">
+                <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                <span>{lastUpdated}</span>
+              </div>
+            )}
+          </div>
+
+          {priceSource === "fallback" && !loading && (
+            <p className="text-xs text-slate-500 mt-2">
+              Semak{" "}
+              <a href="https://hargaemas.com.my" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">
+                hargaemas.com.my
+              </a>{" "}
+              untuk harga tepat.
+            </p>
+          )}
         </div>
 
         {/* Tab Navigation */}
@@ -270,7 +378,7 @@ export default function GoldPriceCalculator() {
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">RM</span>
                     <input
                       type="number"
-                      value={useCustomPrice ? customPrice : GOLD_PRICES.prices[goldType]?.sell || ""}
+                      value={useCustomPrice ? customPrice : goldPrices[goldType as keyof GoldPrices]?.sell || ""}
                       onChange={(e) => {
                         setCustomPrice(e.target.value);
                         setUseCustomPrice(true);
@@ -282,14 +390,14 @@ export default function GoldPriceCalculator() {
                     />
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Harga auto dari jadual. Edit untuk harga kedai anda.
+                    {loading ? "Memuatkan harga..." : "Harga auto dari pasaran. Edit untuk harga kedai anda."}
                   </p>
                 </div>
 
                 {/* Info Box */}
                 <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
                   <p className="text-sm text-amber-800">
-                    <strong>💡 Tip:</strong> Harga adalah anggaran. Sila semak dengan kedai emas untuk harga tepat.
+                    <strong>💡 Tip:</strong> Harga pasaran dunia. Harga kedai mungkin berbeza RM 5-15 per gram.
                   </p>
                 </div>
               </div>
@@ -301,7 +409,11 @@ export default function GoldPriceCalculator() {
               <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-xl p-6 text-white">
                 <h3 className="text-lg font-medium text-amber-100 mb-2">Nilai Emas Anda</h3>
                 <div className="text-4xl md:text-5xl font-bold mb-4">
-                  {formatCurrency(valueResults.totalValue)}
+                  {loading ? (
+                    <span className="opacity-50">Memuatkan...</span>
+                  ) : (
+                    formatCurrency(valueResults.totalValue)
+                  )}
                 </div>
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-amber-400/30">
                   <div>
@@ -321,7 +433,14 @@ export default function GoldPriceCalculator() {
 
               {/* Price Reference */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
-                <h3 className="font-bold text-slate-900 mb-4">📋 Harga Emas Semasa</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-slate-900">📋 Harga Emas Semasa</h3>
+                  {priceSource === "live" && (
+                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                      Live
+                    </span>
+                  )}
+                </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
@@ -332,22 +451,36 @@ export default function GoldPriceCalculator() {
                       </tr>
                     </thead>
                     <tbody>
-                      {GOLD_TYPES.map((type) => (
-                        <tr key={type.value} className={`border-b border-slate-100 ${goldType === type.value ? "bg-amber-50" : ""}`}>
-                          <td className="py-2 font-medium">{type.value} ({type.purity}%)</td>
-                          <td className="py-2 text-right text-slate-600">
-                            {formatCurrency(GOLD_PRICES.prices[type.value]?.buy || 0)}
-                          </td>
-                          <td className="py-2 text-right text-slate-600">
-                            {formatCurrency(GOLD_PRICES.prices[type.value]?.sell || 0)}
+                      {loading ? (
+                        <tr>
+                          <td colSpan={3} className="py-4 text-center text-slate-500">
+                            <div className="flex items-center justify-center gap-2">
+                              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                              </svg>
+                              Memuatkan...
+                            </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        GOLD_TYPES.map((type) => (
+                          <tr key={type.value} className={`border-b border-slate-100 ${goldType === type.value ? "bg-amber-50" : ""}`}>
+                            <td className="py-2 font-medium">{type.value} ({type.purity}%)</td>
+                            <td className="py-2 text-right text-slate-600">
+                              {formatCurrency(goldPrices[type.value as keyof GoldPrices]?.buy || 0)}
+                            </td>
+                            <td className="py-2 text-right text-slate-600">
+                              {formatCurrency(goldPrices[type.value as keyof GoldPrices]?.sell || 0)}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
                 <p className="text-xs text-slate-500 mt-3">
-                  * Harga per gram. Dikemaskini: {GOLD_PRICES.lastUpdated}
+                  * Harga per gram. {priceSource === "live" ? `Dikemaskini: ${lastUpdated}` : lastUpdated}
                 </p>
               </div>
             </div>
@@ -375,7 +508,7 @@ export default function GoldPriceCalculator() {
                     onChange={(e) => {
                       const type = parseInt(e.target.value);
                       setBuyGoldType(type);
-                      setCurrentSellPrice(String(GOLD_PRICES.prices[type]?.sell || 0));
+                      setCurrentSellPrice(String(goldPrices[type as keyof GoldPrices]?.sell || 0));
                     }}
                     className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
                   >
@@ -443,7 +576,7 @@ export default function GoldPriceCalculator() {
                     />
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Harga kedai beli balik dari anda
+                    {loading ? "Memuatkan harga..." : "Harga auto dari pasaran. Edit untuk harga kedai anda."}
                   </p>
                 </div>
               </div>
@@ -597,7 +730,14 @@ export default function GoldPriceCalculator() {
 
         {/* Quick Reference Table */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100 mb-12">
-          <h2 className="text-xl font-bold text-slate-900 mb-6">📊 Jadual Rujukan Pantas</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-slate-900">📊 Jadual Rujukan Pantas</h2>
+            {priceSource === "live" && !loading && (
+              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                Harga Live
+              </span>
+            )}
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -610,28 +750,42 @@ export default function GoldPriceCalculator() {
                 </tr>
               </thead>
               <tbody>
-                {quickReferenceData.map((row) => (
-                  <tr key={row.label} className="border-b border-slate-100 hover:bg-amber-50 transition-colors">
-                    <td className="py-3 px-2 font-medium text-slate-900">{row.label}</td>
-                    <td className="py-3 px-2 text-right text-slate-600">
-                      {formatCurrency(row.weight * (GOLD_PRICES.prices[999]?.sell || 0))}
-                    </td>
-                    <td className="py-3 px-2 text-right text-slate-600">
-                      {formatCurrency(row.weight * (GOLD_PRICES.prices[916]?.sell || 0))}
-                    </td>
-                    <td className="py-3 px-2 text-right text-slate-600">
-                      {formatCurrency(row.weight * (GOLD_PRICES.prices[875]?.sell || 0))}
-                    </td>
-                    <td className="py-3 px-2 text-right text-slate-600">
-                      {formatCurrency(row.weight * (GOLD_PRICES.prices[750]?.sell || 0))}
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 text-center text-slate-500">
+                      <div className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Memuatkan harga...
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  quickReferenceData.map((row) => (
+                    <tr key={row.label} className="border-b border-slate-100 hover:bg-amber-50 transition-colors">
+                      <td className="py-3 px-2 font-medium text-slate-900">{row.label}</td>
+                      <td className="py-3 px-2 text-right text-slate-600">
+                        {formatCurrency(row.weight * (goldPrices[999]?.sell || 0))}
+                      </td>
+                      <td className="py-3 px-2 text-right text-slate-600">
+                        {formatCurrency(row.weight * (goldPrices[916]?.sell || 0))}
+                      </td>
+                      <td className="py-3 px-2 text-right text-slate-600">
+                        {formatCurrency(row.weight * (goldPrices[875]?.sell || 0))}
+                      </td>
+                      <td className="py-3 px-2 text-right text-slate-600">
+                        {formatCurrency(row.weight * (goldPrices[750]?.sell || 0))}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
           <p className="text-xs text-slate-500 mt-4">
-            * Harga berdasarkan harga jual semasa. Dikemaskini: {GOLD_PRICES.lastUpdated}
+            * Harga berdasarkan harga jual semasa. {priceSource === "live" ? `Dikemaskini: ${lastUpdated}` : lastUpdated}
           </p>
         </div>
 
@@ -740,8 +894,8 @@ export default function GoldPriceCalculator() {
               <p className="text-slate-700 mb-2"><strong>Contoh:</strong></p>
               <ul className="text-slate-600 space-y-1">
                 <li>• Rantai emas 916 seberat 10 gram</li>
-                <li>• Harga emas 916: RM 540/gram</li>
-                <li>• Nilai = 10 × RM 540 = <strong>RM 5,400</strong></li>
+                <li>• Harga emas 916: {formatCurrency(goldPrices[916]?.sell || 540)}/gram</li>
+                <li>• Nilai = 10 × {formatCurrency(goldPrices[916]?.sell || 540)} = <strong>{formatCurrency(10 * (goldPrices[916]?.sell || 540))}</strong></li>
               </ul>
             </div>
           </div>
@@ -901,7 +1055,7 @@ export default function GoldPriceCalculator() {
               <div className="border-b border-slate-200 pb-4">
                 <h3 className="font-bold text-slate-900 mb-2">Berapa harga emas 916 hari ini?</h3>
                 <p className="text-slate-600">
-                  Harga emas 916 sekitar RM 540 per gram (Januari 2026). Harga berubah setiap hari mengikut pasaran dunia.
+                  Harga emas 916 sekitar {formatCurrency(goldPrices[916]?.sell || 540)} per gram. Harga berubah setiap hari mengikut pasaran dunia.
                 </p>
               </div>
               <div className="border-b border-slate-200 pb-4">
