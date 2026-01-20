@@ -102,6 +102,10 @@ export default function RefinanceCalculator() {
   const [newRate, setNewRate] = useState(3.95);
   const [newTenure, setNewTenure] = useState(25);
 
+  // Cash out state
+  const [includeCashOut, setIncludeCashOut] = useState(false);
+  const [cashOutAmount, setCashOutAmount] = useState(50000);
+
   // Costs state
   const [zeroEntryCost, setZeroEntryCost] = useState(false);
   const [legalFees, setLegalFees] = useState(() => calculateLegalFees(300000));
@@ -157,14 +161,17 @@ export default function RefinanceCalculator() {
   };
 
   const calculation = useMemo(() => {
+    // New loan amount includes cash out if enabled
+    const newLoanAmount = includeCashOut ? outstandingLoan + cashOutAmount : outstandingLoan;
+
     const currentMonthly = calculateMonthlyPayment(outstandingLoan, currentRate, remainingTenure);
-    const newMonthly = calculateMonthlyPayment(outstandingLoan, newRate, newTenure);
+    const newMonthly = calculateMonthlyPayment(newLoanAmount, newRate, newTenure);
 
     const currentTotalPayment = currentMonthly * remainingTenure * 12;
     const currentTotalInterest = currentTotalPayment - outstandingLoan;
 
     const newTotalPayment = newMonthly * newTenure * 12;
-    const newTotalInterest = newTotalPayment - outstandingLoan;
+    const newTotalInterest = newTotalPayment - newLoanAmount;
 
     const monthlySavings = currentMonthly - newMonthly;
     const yearlySavings = monthlySavings * 12;
@@ -204,8 +211,9 @@ export default function RefinanceCalculator() {
       breakEvenMonths,
       recommendation,
       recommendationText,
+      newLoanAmount,
     };
-  }, [outstandingLoan, currentRate, remainingTenure, newRate, newTenure, zeroEntryCost, legalFees, valuationFee, stampDuty, dischargeFee]);
+  }, [outstandingLoan, currentRate, remainingTenure, newRate, newTenure, zeroEntryCost, legalFees, valuationFee, stampDuty, dischargeFee, includeCashOut, cashOutAmount]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-MY", {
@@ -413,6 +421,54 @@ export default function RefinanceCalculator() {
                       ))}
                     </select>
                   </div>
+
+                  {/* Cash Out Toggle */}
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
+                    <div>
+                      <p className="font-medium text-slate-800">Include Cash Out</p>
+                      <p className="text-xs text-slate-500">Withdraw equity from your property</p>
+                    </div>
+                    <button
+                      onClick={() => setIncludeCashOut(!includeCashOut)}
+                      className={`relative w-14 h-7 rounded-full transition-colors ${
+                        includeCashOut ? "bg-blue-600" : "bg-slate-300"
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                          includeCashOut ? "left-8" : "left-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Cash Out Amount Slider */}
+                  {includeCashOut && (
+                    <div className="p-4 bg-blue-50 rounded-xl -mt-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Cash Out Amount (RM)
+                      </label>
+                      <div className="text-2xl font-bold text-blue-600 mb-2">
+                        {formatCurrency(cashOutAmount)}
+                      </div>
+                      <input
+                        type="range"
+                        value={cashOutAmount}
+                        onChange={(e) => setCashOutAmount(Number(e.target.value))}
+                        min={10000}
+                        max={300000}
+                        step={10000}
+                        className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      />
+                      <div className="flex justify-between text-xs text-slate-400 mt-1">
+                        <span>RM 10,000</span>
+                        <span>RM 300,000</span>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-2">
+                        New Loan Amount: {formatCurrency(outstandingLoan + cashOutAmount)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -546,6 +602,14 @@ export default function RefinanceCalculator() {
                           {calculation.monthlySavings > 0 ? "+" : ""}{formatCurrency(calculation.monthlySavings)}
                         </td>
                       </tr>
+                      {includeCashOut && (
+                        <tr className="border-b border-slate-100 bg-blue-50">
+                          <td className="py-3 text-blue-700">Cash Out</td>
+                          <td className="text-right py-3 text-slate-400">-</td>
+                          <td className="text-right py-3 font-medium text-blue-700">{formatCurrency(cashOutAmount)}</td>
+                          <td className="text-right py-3 text-blue-600 text-xs">withdrawn</td>
+                        </tr>
+                      )}
                       <tr className="border-b border-slate-100">
                         <td className="py-3 text-slate-600">Interest Rate</td>
                         <td className="text-right py-3 font-medium text-slate-800">{currentRate.toFixed(2)}%</td>
@@ -657,6 +721,22 @@ export default function RefinanceCalculator() {
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-slate-700 mb-4">Cost Breakdown</h3>
                 <div className="space-y-3">
+                  {includeCashOut && (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">Outstanding Loan</span>
+                        <span className="text-slate-800">{formatCurrency(outstandingLoan)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-blue-600">+ Cash Out</span>
+                        <span className="text-blue-600">{formatCurrency(cashOutAmount)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm pb-3 border-b border-slate-200">
+                        <span className="font-medium text-slate-700">New Loan Amount</span>
+                        <span className="font-semibold text-slate-800">{formatCurrency(calculation.newLoanAmount)}</span>
+                      </div>
+                    </>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Legal Fees</span>
                     <span className="text-slate-800">{formatCurrency(zeroEntryCost ? 0 : legalFees)}</span>
@@ -703,8 +783,30 @@ export default function RefinanceCalculator() {
           </div>
         </div>
 
+        {/* Cash Out Teaser CTA */}
+        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+          <div className="flex items-start gap-4">
+            <span className="text-3xl">💰</span>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-800 mb-1">Looking for Cash Out Refinance?</h3>
+              <p className="text-sm text-slate-600 mb-3">
+                Learn how to unlock your property equity for renovation, investment, or debt consolidation.
+              </p>
+              <a
+                href="/property/cash-out-refinance-malaysia-guide/"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                Read Cash Out Guide
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Bank Rates Table */}
-        <div className="mt-12 bg-white rounded-2xl shadow-sm p-6">
+        <div className="mt-8 bg-white rounded-2xl shadow-sm p-6">
           <h2 className="text-xl font-bold text-slate-800 mb-4">
             Latest Refinance Interest Rates in Malaysia {currentYear}
           </h2>
