@@ -793,7 +793,7 @@ export default function RefinanceCalculator() {
                 Learn how to unlock your property equity for renovation, investment, or debt consolidation.
               </p>
               <a
-                href="/property/cash-out-refinance-malaysia-guide/"
+                href="/guides/cash-out-refinance-malaysia/"
                 className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
               >
                 Read Cash Out Guide

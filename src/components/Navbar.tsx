@@ -5,9 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/data/calculators";
 
+const GUIDES = [
+  { label: "Cash Out Refinance Guide", href: "/guides/cash-out-refinance-malaysia/" },
+];
+
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
+  const [guidesDropdownOpen, setGuidesDropdownOpen] = useState(false);
 
   return (
     <>
@@ -69,6 +74,41 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* Guides Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setGuidesDropdownOpen(!guidesDropdownOpen)}
+                onBlur={() => setTimeout(() => setGuidesDropdownOpen(false), 150)}
+                className="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                Guides
+                <svg
+                  className={`w-4 h-4 transition-transform ${guidesDropdownOpen ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {guidesDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {GUIDES.map((guide) => (
+                    <Link
+                      key={guide.href}
+                      href={guide.href}
+                      onClick={() => setGuidesDropdownOpen(false)}
+                      className="block w-full px-4 py-2 text-left text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                    >
+                      {guide.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -120,6 +160,22 @@ export default function Navbar() {
                       className="block w-full px-4 py-3 text-left text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
                     >
                       {cat.label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-4">
+                  <p className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Guides
+                  </p>
+                  {GUIDES.map((guide) => (
+                    <Link
+                      key={guide.href}
+                      href={guide.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block w-full px-4 py-3 text-left text-slate-600 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
+                    >
+                      {guide.label}
                     </Link>
                   ))}
                 </div>
