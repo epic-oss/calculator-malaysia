@@ -168,6 +168,15 @@ export const calculators: Calculator[] = [
     colSpan: 6,
   },
   {
+    id: "kalkulator-refinance",
+    name: "Kalkulator Refinance Pinjaman Rumah",
+    description: "Kira penjimatan refinance pinjaman perumahan anda. Bandingkan kadar dari 15+ bank.",
+    category: "property",
+    icon: "🏠",
+    slug: "/property/kalkulator-refinance-pinjaman-perumahan/",
+    colSpan: 6,
+  },
+  {
     id: "quit-rent",
     name: "Quit Rent Calculator Selangor (Cukai Tanah)",
     description: "Calculate quit rent for Selangor and all states. Check rates, deadlines, and pay online.",
