@@ -190,7 +190,9 @@ function HomeContent() {
                                     ? "#dc2626"
                                     : cat.color === "emerald"
                                       ? "#059669"
-                                      : "#4f46e5",
+                                      : cat.color === "amber"
+                                        ? "#d97706"
+                                        : "#4f46e5",
                         color: "white",
                       }
                     : {}

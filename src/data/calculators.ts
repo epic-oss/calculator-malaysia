@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -19,6 +19,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   salary: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
   investment: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200" },
   cgpa: { bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200" },
+  auto: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -30,6 +31,7 @@ export const categoryLabels: Record<string, string> = {
   salary: "Salary",
   investment: "Investment",
   cgpa: "CGPA",
+  auto: "Auto",
 };
 
 export const calculators: Calculator[] = [
@@ -283,6 +285,17 @@ export const calculators: Calculator[] = [
     slug: "/cgpa/cgpa-calculator-uia/",
     colSpan: 6,
   },
+
+  // AUTO CALCULATORS
+  {
+    id: "car-refinance",
+    name: "Car Refinance Calculator",
+    description: "Calculate how much you can save by refinancing your car loan. Compare rates from banks.",
+    category: "auto",
+    icon: "🚗",
+    slug: "/auto/car-refinance-calculator-malaysia/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
@@ -292,5 +305,6 @@ export const categories = [
   { id: "credit-card", label: "Credit Cards", color: "orange" },
   { id: "tax", label: "Tax & Salary", color: "red" },
   { id: "investment", label: "Investment", color: "emerald" },
+  { id: "auto", label: "Auto", color: "amber" },
   { id: "cgpa", label: "CGPA", color: "indigo" },
 ];
