@@ -158,6 +158,15 @@ export const calculators: Calculator[] = [
     slug: "/loan/home-loan-eligibility-calculator-malaysia/",
     colSpan: 6,
   },
+  {
+    id: "personal-loan-refinance",
+    name: "Personal Loan Refinance Calculator",
+    description: "Calculate savings by consolidating high-interest debts. Compare rates from 15+ banks.",
+    category: "loan",
+    icon: "💰",
+    slug: "/loans/personal-loan-refinance-calculator-malaysia/",
+    colSpan: 6,
+  },
 
   // PROPERTY CALCULATORS
   {
