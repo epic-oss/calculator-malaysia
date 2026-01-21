@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -20,6 +20,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   investment: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200" },
   cgpa: { bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200" },
   auto: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
+  zakat: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -32,6 +33,7 @@ export const categoryLabels: Record<string, string> = {
   investment: "Investment",
   cgpa: "CGPA",
   auto: "Auto",
+  zakat: "Zakat",
 };
 
 export const calculators: Calculator[] = [
@@ -332,6 +334,17 @@ export const calculators: Calculator[] = [
     slug: "/auto/kalkulator-refinance-kereta-malaysia/",
     colSpan: 6,
   },
+
+  // ZAKAT CALCULATORS
+  {
+    id: "zakat-emas",
+    name: "Kalkulator Zakat Emas Malaysia",
+    description: "Kira zakat emas simpanan & perhiasan mengikut kadar uruf negeri. Nisab 85 gram, kadar 2.5%.",
+    category: "zakat",
+    icon: "🕌",
+    slug: "/zakat/kalkulator-zakat-emas-malaysia/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
@@ -341,6 +354,7 @@ export const categories = [
   { id: "credit-card", label: "Credit Cards", color: "orange" },
   { id: "tax", label: "Tax & Salary", color: "red" },
   { id: "investment", label: "Investment", color: "emerald" },
+  { id: "zakat", label: "Zakat", color: "teal" },
   { id: "auto", label: "Auto", color: "amber" },
   { id: "cgpa", label: "CGPA", color: "indigo" },
 ];
