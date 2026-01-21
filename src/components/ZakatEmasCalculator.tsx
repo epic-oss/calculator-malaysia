@@ -466,6 +466,27 @@ export default function ZakatEmasCalculator() {
                 )}
               </div>
 
+              {/* Wasiat & Hibah CTA - Only show when Wajib Zakat */}
+              {simpananResults.isWajib && (
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-lg p-6 border border-amber-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Sudah ada perancangan harta Islam?
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Lindungi harta dan keluarga anda dengan Wasiat & Hibah yang sah mengikut syariah.
+                  </p>
+                  <a
+                    href="https://wasiat.com.my?ref=calculatormy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Dapatkan konsultasi Wasiat & Hibah PERCUMA
+                    <span>→</span>
+                  </a>
+                </div>
+              )}
+
               {/* Breakdown */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
                 <h3 className="font-bold text-slate-900 mb-4">📋 Pecahan</h3>
@@ -652,6 +673,27 @@ export default function ZakatEmasCalculator() {
                 )}
               </div>
 
+              {/* Wasiat & Hibah CTA - Only show when Wajib Zakat */}
+              {perhiasanResults.isWajib && (
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-lg p-6 border border-amber-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Sudah ada perancangan harta Islam?
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Lindungi harta dan keluarga anda dengan Wasiat & Hibah yang sah mengikut syariah.
+                  </p>
+                  <a
+                    href="https://wasiat.com.my?ref=calculatormy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Dapatkan konsultasi Wasiat & Hibah PERCUMA
+                    <span>→</span>
+                  </a>
+                </div>
+              )}
+
               {/* Breakdown */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
                 <h3 className="font-bold text-slate-900 mb-4">📋 Pecahan</h3>
@@ -801,6 +843,27 @@ export default function ZakatEmasCalculator() {
                   </div>
                 )}
               </div>
+
+              {/* Wasiat & Hibah CTA - Only show when Wajib Zakat */}
+              {silverResults.isWajib && (
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl shadow-lg p-6 border border-amber-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">
+                    Sudah ada perancangan harta Islam?
+                  </h3>
+                  <p className="text-slate-600 text-sm mb-4">
+                    Lindungi harta dan keluarga anda dengan Wasiat & Hibah yang sah mengikut syariah.
+                  </p>
+                  <a
+                    href="https://wasiat.com.my?ref=calculatormy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Dapatkan konsultasi Wasiat & Hibah PERCUMA
+                    <span>→</span>
+                  </a>
+                </div>
+              )}
 
               {/* Breakdown */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">

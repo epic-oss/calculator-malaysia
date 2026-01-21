@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat" | "renovation";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -21,6 +21,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   cgpa: { bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200" },
   auto: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
   zakat: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
+  renovation: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200" },
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -34,6 +35,7 @@ export const categoryLabels: Record<string, string> = {
   cgpa: "CGPA",
   auto: "Auto",
   zakat: "Zakat",
+  renovation: "Renovation",
 };
 
 export const calculators: Calculator[] = [
@@ -345,13 +347,34 @@ export const calculators: Calculator[] = [
     slug: "/zakat/kalkulator-zakat-emas-malaysia/",
     colSpan: 6,
   },
+
+  // RENOVATION CALCULATORS
+  {
+    id: "kitchen-renovation",
+    name: "Kitchen Renovation Cost Calculator",
+    description: "Calculate kitchen renovation cost based on size, cabinet type, and finish level. Get free quotes from contractors.",
+    category: "renovation",
+    icon: "🍳",
+    slug: "/renovation/kitchen-renovation-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "kalkulator-renovate-dapur",
+    name: "Kalkulator Kos Renovate Dapur",
+    description: "Kira anggaran kos renovasi dapur berdasarkan saiz, jenis kabinet, dan tahap kemasan.",
+    category: "renovation",
+    icon: "🍳",
+    slug: "/renovation/kalkulator-kos-renovate-dapur/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
   { id: "insurance", label: "Insurance", color: "blue" },
   { id: "loan", label: "Loans", color: "green" },
   { id: "property", label: "Property", color: "purple" },
-  { id: "credit-card", label: "Credit Cards", color: "orange" },
+  { id: "renovation", label: "Renovation", color: "orange" },
+  { id: "credit-card", label: "Credit Cards", color: "rose" },
   { id: "tax", label: "Tax & Salary", color: "red" },
   { id: "investment", label: "Investment", color: "emerald" },
   { id: "zakat", label: "Zakat", color: "teal" },
