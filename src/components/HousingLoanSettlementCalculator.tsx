@@ -732,18 +732,19 @@ export default function HousingLoanSettlementCalculator() {
                   <div className="text-4xl">💬</div>
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-slate-800 mb-1">
-                      Talk to Loan Expert
+                      Not Sure Whether to Settle or Refinance?
                     </h3>
                     <p className="text-sm text-slate-500">
-                      Free consultation on settlement vs refinancing
+                      Get free consultation from our loan specialists
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={openModal}
-                  className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
+                  className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
-                  Get Advice
+                  Get Free Consultation
+                  <span>→</span>
                 </button>
               </div>
             </div>
