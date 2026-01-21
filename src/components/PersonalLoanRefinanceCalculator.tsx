@@ -20,20 +20,6 @@ const DEBT_TYPES = ["Credit Card", "Personal Loan", "Car Loan", "BNPL", "Other"]
 
 const TENURE_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
-const DEBT_RANGES = [
-  "Below RM20,000",
-  "RM20,000 - RM50,000",
-  "RM50,000 - RM100,000",
-  "Above RM100,000",
-];
-
-const INCOME_RANGES = [
-  "Below RM3,000",
-  "RM3,000 - RM5,000",
-  "RM5,000 - RM8,000",
-  "RM8,000 - RM10,000",
-  "Above RM10,000",
-];
 
 interface Debt {
   id: string;
@@ -89,6 +75,7 @@ export default function PersonalLoanRefinanceCalculator() {
   const [newRate, setNewRate] = useState(4.38);
   const [newTenure, setNewTenure] = useState(5);
   const [processingFeeRate, setProcessingFeeRate] = useState(1);
+  const [monthlyIncome, setMonthlyIncome] = useState(5000);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -98,9 +85,6 @@ export default function PersonalLoanRefinanceCalculator() {
     name: "",
     whatsapp: "",
     email: "",
-    debtRange: "RM20,000 - RM50,000",
-    debtTypes: [] as string[],
-    incomeRange: "RM3,000 - RM5,000",
   });
 
   // Add new debt
@@ -172,6 +156,22 @@ export default function PersonalLoanRefinanceCalculator() {
     const currentTimeToPayoff = totalMonthlyPayment > 0 ? Math.ceil(totalDebt / (totalMonthlyPayment * 0.5) / 12) : 5; // rough estimate
     const newTimeToPayoff = newTenure;
 
+    // DSR Calculation
+    const dsr = monthlyIncome > 0 ? (newMonthly / monthlyIncome) * 100 : 0;
+    let dsrStatus: "good" | "warning" | "high";
+    let dsrText: string;
+
+    if (dsr <= 40) {
+      dsrStatus = "good";
+      dsrText = "Likely Eligible";
+    } else if (dsr <= 70) {
+      dsrStatus = "warning";
+      dsrText = "May need lower amount";
+    } else {
+      dsrStatus = "high";
+      dsrText = "High DSR";
+    }
+
     let recommendation: "good" | "neutral" | "bad";
     let recommendationText: string;
 
@@ -206,21 +206,18 @@ export default function PersonalLoanRefinanceCalculator() {
       recommendation,
       recommendationText,
       rateReduction,
+      dsr,
+      dsrStatus,
+      dsrText,
     };
-  }, [debts, newRate, newTenure, processingFeeRate]);
-
-  const handleDebtTypeToggle = (type: string) => {
-    setFormData(prev => ({
-      ...prev,
-      debtTypes: prev.debtTypes.includes(type)
-        ? prev.debtTypes.filter(t => t !== type)
-        : [...prev.debtTypes, type]
-    }));
-  };
+  }, [debts, newRate, newTenure, processingFeeRate, monthlyIncome]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Get debt types from calculator inputs
+    const debtTypesFromCalc = Array.from(new Set(debts.map(d => d.type))).join(", ");
 
     try {
       const response = await fetch(WEBHOOK_URL, {
@@ -228,16 +225,17 @@ export default function PersonalLoanRefinanceCalculator() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          debtTypes: formData.debtTypes.join(", "),
           calculator_type: "personal_loan_refinance",
           source_url: typeof window !== "undefined" ? window.location.href : "",
-          calculation_summary: {
-            total_debt: calculation.totalDebt,
-            current_monthly: calculation.totalMonthlyPayment,
-            new_monthly: calculation.newMonthly,
-            monthly_savings: calculation.monthlySavings,
-            selected_bank: selectedBank,
-          },
+          // Auto-captured from calculator
+          total_debt: calculation.totalDebt,
+          debt_types: debtTypesFromCalc,
+          new_payment: calculation.newMonthly,
+          savings: calculation.monthlySavings,
+          weighted_avg_rate: calculation.weightedAverageRate,
+          monthly_income: monthlyIncome,
+          dsr: calculation.dsr,
+          selected_bank: selectedBank,
           timestamp: new Date().toISOString(),
         }),
       });
@@ -484,6 +482,55 @@ export default function PersonalLoanRefinanceCalculator() {
                     <p className="text-xs text-slate-500 mt-1">
                       Fee amount: {formatCurrency(calculation.processingFee)}
                     </p>
+                  </div>
+
+                  {/* Monthly Income for DSR */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Monthly Income (RM)
+                    </label>
+                    <input
+                      type="number"
+                      value={monthlyIncome}
+                      onChange={(e) => setMonthlyIncome(Math.max(1000, Number(e.target.value)))}
+                      min={1000}
+                      max={100000}
+                      step={100}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  {/* DSR Display */}
+                  <div className="bg-slate-50 rounded-xl p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-slate-700">Your DSR:</span>
+                      <span className={`font-bold ${
+                        calculation.dsrStatus === "good" ? "text-emerald-600" :
+                        calculation.dsrStatus === "warning" ? "text-amber-600" : "text-red-600"
+                      }`}>
+                        {calculation.dsr.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className={`absolute left-0 top-0 h-full rounded-full transition-all ${
+                          calculation.dsrStatus === "good" ? "bg-emerald-500" :
+                          calculation.dsrStatus === "warning" ? "bg-amber-500" : "bg-red-500"
+                        }`}
+                        style={{ width: `${Math.min(calculation.dsr, 100)}%` }}
+                      />
+                      {/* 70% limit marker */}
+                      <div className="absolute top-0 h-full w-0.5 bg-slate-600" style={{ left: "70%" }} />
+                    </div>
+                    <div className="flex justify-between mt-1">
+                      <span className={`text-xs font-medium ${
+                        calculation.dsrStatus === "good" ? "text-emerald-600" :
+                        calculation.dsrStatus === "warning" ? "text-amber-600" : "text-red-600"
+                      }`}>
+                        {calculation.dsrText}
+                      </span>
+                      <span className="text-xs text-slate-500">70% limit</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -955,6 +1002,27 @@ export default function PersonalLoanRefinanceCalculator() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Calculator Summary */}
+                  <div className="bg-slate-50 rounded-xl p-4 mb-2">
+                    <h4 className="text-sm font-semibold text-slate-700 mb-3">Your Calculation Summary</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-600">Total Debt:</span>
+                        <span className="font-bold text-slate-800">{formatCurrency(calculation.totalDebt)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-600">New Payment:</span>
+                        <span className="font-bold text-slate-800">{formatCurrency(calculation.newMonthly)}/mo</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-600">Potential Savings:</span>
+                        <span className={`font-bold ${calculation.monthlySavings > 0 ? "text-emerald-600" : "text-red-600"}`}>
+                          {formatCurrency(calculation.monthlySavings)}/mo
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
                     <input
@@ -963,18 +1031,6 @@ export default function PersonalLoanRefinanceCalculator() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Enter your name"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={formData.whatsapp}
-                      onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                      placeholder="e.g. 012-3456789"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -992,51 +1048,15 @@ export default function PersonalLoanRefinanceCalculator() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Total Debt Amount *</label>
-                    <select
+                    <label className="block text-sm font-medium text-slate-700 mb-1">WhatsApp Number *</label>
+                    <input
+                      type="tel"
                       required
-                      value={formData.debtRange}
-                      onChange={(e) => setFormData({ ...formData, debtRange: e.target.value })}
+                      value={formData.whatsapp}
+                      onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                      placeholder="e.g. 012-3456789"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {DEBT_RANGES.map((range) => (
-                        <option key={range} value={range}>{range}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Types of Debt *</label>
-                    <div className="flex flex-wrap gap-2">
-                      {DEBT_TYPES.map((type) => (
-                        <button
-                          key={type}
-                          type="button"
-                          onClick={() => handleDebtTypeToggle(type)}
-                          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            formData.debtTypes.includes(type)
-                              ? "bg-blue-600 text-white"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                          }`}
-                        >
-                          {type}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Monthly Income *</label>
-                    <select
-                      required
-                      value={formData.incomeRange}
-                      onChange={(e) => setFormData({ ...formData, incomeRange: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {INCOME_RANGES.map((range) => (
-                        <option key={range} value={range}>{range}</option>
-                      ))}
-                    </select>
+                    />
                   </div>
 
                   <button
