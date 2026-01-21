@@ -264,11 +264,7 @@ export default function GoldPriceCalculator() {
 
           {priceSource === "fallback" && !loading && (
             <p className="text-xs text-slate-500 mt-2">
-              Semak{" "}
-              <a href="https://hargaemas.com.my" target="_blank" rel="noopener noreferrer" className="text-amber-600 underline">
-                hargaemas.com.my
-              </a>{" "}
-              untuk harga tepat.
+              Harga anggaran. Sila masukkan harga dari kedai emas anda.
             </p>
           )}
         </div>
@@ -390,7 +386,7 @@ export default function GoldPriceCalculator() {
                     />
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    {loading ? "Memuatkan harga..." : "Harga auto dari pasaran. Edit untuk harga kedai anda."}
+                    {loading ? "Memuatkan harga..." : "Harga dikemaskini secara automatik dari pasaran dunia"}
                   </p>
                 </div>
 
@@ -576,7 +572,7 @@ export default function GoldPriceCalculator() {
                     />
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    {loading ? "Memuatkan harga..." : "Harga auto dari pasaran. Edit untuk harga kedai anda."}
+                    {loading ? "Memuatkan harga..." : "Harga dikemaskini secara automatik dari pasaran dunia"}
                   </p>
                 </div>
               </div>
@@ -800,17 +796,9 @@ export default function GoldPriceCalculator() {
               </div>
             ))}
           </div>
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <p className="text-sm text-blue-800">
-              <strong>🔗 Semak harga terkini:</strong>{" "}
-              <a
-                href="https://hargaemas.com.my"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:no-underline"
-              >
-                hargaemas.com.my →
-              </a>
+          <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+            <p className="text-sm text-emerald-800">
+              <strong>✓</strong> Harga dikemaskini secara automatik dari pasaran dunia
             </p>
           </div>
         </div>
