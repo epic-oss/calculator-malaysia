@@ -1,6 +1,23 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
+
+interface CapturedCalculation {
+  outstandingLoan: number;
+  currentRate: number;
+  remainingTenure: number;
+  newRate: number;
+  newTenure: number;
+  selectedBank: string;
+  monthlySavings: number;
+  yearlySavings: number;
+  totalInterestSavings: number;
+  totalCosts: number;
+  breakEvenMonths: number;
+  includeCashOut: boolean;
+  cashOutAmount: number;
+  newLoanAmount: number;
+}
 
 const WEBHOOK_URL = "https://hook.us2.make.com/x41kcriuri5w5s8fkrfi6884hu05yhpe";
 
@@ -21,45 +38,6 @@ const BANK_RATES = [
 ];
 
 const TENURE_OPTIONS = [5, 10, 15, 20, 25, 30, 35];
-
-const LOAN_RANGES = [
-  "Bawah RM200,000",
-  "RM200,000 - RM400,000",
-  "RM400,000 - RM600,000",
-  "RM600,000 - RM1,000,000",
-  "Atas RM1,000,000",
-];
-
-const INCOME_RANGES = [
-  "Bawah RM5,000",
-  "RM5,000 - RM10,000",
-  "RM10,000 - RM15,000",
-  "RM15,000 - RM20,000",
-  "Atas RM20,000",
-];
-
-const PROPERTY_TYPES = [
-  { label: "Rumah Teres", value: "terrace" },
-  { label: "Kondominium / Apartment", value: "condo" },
-  { label: "Rumah Berkembar", value: "semi-d" },
-  { label: "Banglo", value: "bungalow" },
-];
-
-const BANK_LIST = [
-  "Maybank",
-  "CIMB",
-  "Public Bank",
-  "RHB",
-  "Hong Leong",
-  "AmBank",
-  "Bank Islam",
-  "HSBC",
-  "Standard Chartered",
-  "Alliance Bank",
-  "OCBC",
-  "UOB",
-  "Lain-lain",
-];
 
 function calculateMonthlyPayment(principal: number, annualRate: number, years: number): number {
   if (principal <= 0 || years <= 0) return 0;
@@ -117,14 +95,12 @@ export default function RefinanceCalculatorBM() {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card" | "inline_cta">("results_card");
   const [formData, setFormData] = useState({
     name: "",
     whatsapp: "",
-    email: "",
-    loanRange: "RM200,000 - RM400,000",
-    propertyType: "terrace",
-    incomeRange: "RM5,000 - RM10,000",
-    currentBank: "",
   });
 
   // Handle bank selection
@@ -233,25 +209,63 @@ export default function RefinanceCalculatorBM() {
     }).format(amount);
   };
 
+  const openModal = useCallback((source: "sticky_bar" | "results_card" | "inline_cta") => {
+    setCtaSource(source);
+    setCapturedCalc({
+      outstandingLoan,
+      currentRate,
+      remainingTenure,
+      newRate,
+      newTenure,
+      selectedBank,
+      monthlySavings: calculation.monthlySavings,
+      yearlySavings: calculation.yearlySavings,
+      totalInterestSavings: calculation.totalInterestSavings,
+      totalCosts: calculation.totalCosts,
+      breakEvenMonths: calculation.breakEvenMonths,
+      includeCashOut,
+      cashOutAmount,
+      newLoanAmount: calculation.newLoanAmount,
+    });
+    setShowModal(true);
+  }, [outstandingLoan, currentRate, remainingTenure, newRate, newTenure, selectedBank, calculation, includeCashOut, cashOutAmount]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Determine device type
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
 
     try {
       const response = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          timestamp: new Date().toISOString(),
+          name: formData.name,
+          whatsapp: formData.whatsapp,
           calculator_type: "refinance_housing_bm",
           source_url: typeof window !== "undefined" ? window.location.href : "",
-          calculation_summary: {
-            outstanding_loan: outstandingLoan,
-            current_rate: currentRate,
-            new_rate: newRate,
-            monthly_savings: calculation.monthlySavings,
-          },
-          timestamp: new Date().toISOString(),
+          outstanding_loan: capturedCalc?.outstandingLoan,
+          current_rate: capturedCalc?.currentRate,
+          remaining_tenure: capturedCalc?.remainingTenure,
+          new_rate: capturedCalc?.newRate,
+          new_tenure: capturedCalc?.newTenure,
+          selected_bank: capturedCalc?.selectedBank,
+          monthly_savings: capturedCalc?.monthlySavings,
+          yearly_savings: capturedCalc?.yearlySavings,
+          total_interest_savings: capturedCalc?.totalInterestSavings,
+          total_costs: capturedCalc?.totalCosts,
+          break_even_months: capturedCalc?.breakEvenMonths,
+          include_cash_out: capturedCalc?.includeCashOut,
+          cash_out_amount: capturedCalc?.cashOutAmount,
+          new_loan_amount: capturedCalc?.newLoanAmount,
+          // Tracking fields
+          device_type: deviceType,
+          cta_source: ctaSource,
+          referrer: typeof document !== "undefined" ? document.referrer : "",
+          landing_page: typeof window !== "undefined" ? window.location.href : "",
         }),
       });
 
@@ -687,7 +701,7 @@ export default function RefinanceCalculatorBM() {
                 </div>
               </div>
 
-              {/* Recommendation */}
+              {/* Recommendation with CTA */}
               <div className={`rounded-2xl p-6 border-2 ${
                 calculation.recommendation === "good" ? "bg-emerald-50 border-emerald-200" :
                 calculation.recommendation === "neutral" ? "bg-amber-50 border-amber-200" :
@@ -715,6 +729,68 @@ export default function RefinanceCalculatorBM() {
                     </p>
                   </div>
                 </div>
+
+                {/* Conditional CTA inside recommendation */}
+                {calculation.monthlySavings > 200 ? (
+                  <div className="mt-4 bg-white/80 rounded-xl p-4 border border-emerald-200">
+                    <p className="font-bold text-emerald-800 text-lg">
+                      Jimat {formatCurrency(calculation.monthlySavings)}/bulan - Kunci kadar anda sekarang!
+                    </p>
+                    <ul className="text-sm text-emerald-700 mt-2 space-y-1">
+                      <li>✓ Bandingkan kadar dari 15+ bank</li>
+                      <li>✓ Konsultasi percuma, tanpa komitmen</li>
+                      <li>✓ Proses kelulusan dalam 24 jam</li>
+                    </ul>
+                    <button
+                      onClick={() => openModal("inline_cta")}
+                      className="mt-3 w-full py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold transition-colors"
+                    >
+                      Semak Kelayakan Sekarang →
+                    </button>
+                    <p className="text-xs text-emerald-600 mt-2 text-center">
+                      ✓ 245 pemilik rumah telah semak kelayakan refinancing bulan ini
+                    </p>
+                    <p className="text-xs text-amber-600 mt-1 text-center">
+                      ⏰ Kadar OPR dijangka naik - kunci kadar rendah anda sekarang
+                    </p>
+                  </div>
+                ) : calculation.monthlySavings > 0 ? (
+                  <div className="mt-4 bg-white/80 rounded-xl p-4 border border-amber-200">
+                    <p className="font-bold text-amber-800 text-lg">
+                      Penjimatan kecil - Mungkin repricing lebih sesuai
+                    </p>
+                    <ul className="text-sm text-amber-700 mt-2 space-y-1">
+                      <li>✓ Semak pilihan repricing dengan bank semasa</li>
+                      <li>✓ Dapatkan nasihat pakar percuma</li>
+                      <li>✓ Kos repricing lebih rendah (~RM200)</li>
+                    </ul>
+                    <button
+                      onClick={() => openModal("inline_cta")}
+                      className="mt-3 w-full py-3 bg-amber-600 hover:bg-amber-700 rounded-xl text-white font-semibold transition-colors"
+                    >
+                      Minta Nasihat Pakar →
+                    </button>
+                    <p className="text-xs text-amber-600 mt-2 text-center">
+                      ✓ 245 pemilik rumah telah semak pilihan mereka bulan ini
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-4 bg-white/80 rounded-xl p-4 border border-slate-200">
+                    <p className="font-bold text-slate-800 text-lg">
+                      Refinance tidak disyorkan sekarang
+                    </p>
+                    <ul className="text-sm text-slate-600 mt-2 space-y-1">
+                      <li>✓ Cuba semak semula dengan kadar berbeza</li>
+                      <li>✓ Atau minta nasihat percuma dari pakar</li>
+                    </ul>
+                    <button
+                      onClick={() => openModal("inline_cta")}
+                      className="mt-3 w-full py-3 bg-slate-600 hover:bg-slate-700 rounded-xl text-white font-semibold transition-colors"
+                    >
+                      Hubungi Pakar →
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Cost Breakdown */}
@@ -760,25 +836,6 @@ export default function RefinanceCalculatorBM() {
                 </div>
               </div>
 
-              {/* CTA Card */}
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-2xl">🏠</span>
-                  <h3 className="text-lg font-bold text-slate-800">Dapatkan Kadar Refinance Terbaik</h3>
-                </div>
-                <p className="text-sm text-slate-600 mb-4">
-                  Bandingkan tawaran dari 15+ bank dalam 5 minit. Konsultasi percuma, tanpa komitmen.
-                </p>
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  Semak Kelayakan Saya
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -1073,13 +1130,44 @@ export default function RefinanceCalculatorBM() {
         </div>
       </div>
 
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && calculation.monthlySavings > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-emerald-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Tutup"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">Jimat {formatCurrency(calculation.monthlySavings)}/bulan</p>
+              <p className="text-xs text-white/80">Semak kelayakan sekarang</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-emerald-600 font-semibold rounded-lg text-sm"
+            >
+              Semak →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Lead Capture Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100">
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold text-slate-800">Dapatkan Sebut Harga Percuma</h3>
+                <h3 className="text-xl font-bold text-slate-800">
+                  {capturedCalc && capturedCalc.monthlySavings > 200
+                    ? `Kunci Penjimatan ${formatCurrency(capturedCalc.monthlySavings)}/bulan`
+                    : "Dapatkan Nasihat Pakar Percuma"}
+                </h3>
                 <button
                   onClick={() => {
                     setShowModal(false);
@@ -1104,11 +1192,28 @@ export default function RefinanceCalculatorBM() {
                   </div>
                   <h4 className="text-lg font-bold text-slate-800 mb-2">Terima kasih!</h4>
                   <p className="text-slate-600">
-                    Pakar pinjaman kami akan menghubungi anda dalam masa 24 jam untuk membincangkan pilihan refinance terbaik untuk anda.
+                    Pakar pinjaman kami akan menghubungi anda dalam masa 24 jam untuk membincangkan pilihan refinance terbaik.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Calculation Summary */}
+                  {capturedCalc && (
+                    <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+                      <p className="text-sm font-medium text-emerald-800 mb-2">Ringkasan Kiraan Anda:</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="text-slate-600">Baki Pinjaman:</div>
+                        <div className="font-medium text-slate-800">{formatCurrency(capturedCalc.outstandingLoan)}</div>
+                        <div className="text-slate-600">Kadar Semasa:</div>
+                        <div className="font-medium text-slate-800">{capturedCalc.currentRate.toFixed(2)}%</div>
+                        <div className="text-slate-600">Kadar Baru:</div>
+                        <div className="font-medium text-emerald-600">{capturedCalc.newRate.toFixed(2)}%</div>
+                        <div className="text-slate-600">Jimat Bulanan:</div>
+                        <div className="font-bold text-emerald-600">{formatCurrency(capturedCalc.monthlySavings)}</div>
+                      </div>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Nama Penuh *</label>
                     <input
@@ -1133,87 +1238,23 @@ export default function RefinanceCalculatorBM() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Alamat Email *</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="email@anda.com"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Baki Pinjaman *</label>
-                    <select
-                      required
-                      value={formData.loanRange}
-                      onChange={(e) => setFormData({ ...formData, loanRange: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      {LOAN_RANGES.map((range) => (
-                        <option key={range} value={range}>{range}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Jenis Hartanah *</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {PROPERTY_TYPES.map((type) => (
-                        <button
-                          key={type.value}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, propertyType: type.value })}
-                          className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                            formData.propertyType === type.value
-                              ? "bg-emerald-600 text-white"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                          }`}
-                        >
-                          {type.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Pendapatan Bulanan *</label>
-                    <select
-                      required
-                      value={formData.incomeRange}
-                      onChange={(e) => setFormData({ ...formData, incomeRange: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      {INCOME_RANGES.map((range) => (
-                        <option key={range} value={range}>{range}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Bank Semasa (Pilihan)</label>
-                    <select
-                      value={formData.currentBank}
-                      onChange={(e) => setFormData({ ...formData, currentBank: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="">Pilih bank semasa anda</option>
-                      {BANK_LIST.map((bank) => (
-                        <option key={bank} value={bank}>{bank}</option>
-                      ))}
-                    </select>
-                  </div>
-
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 rounded-xl text-white font-semibold transition-all"
                   >
-                    {isSubmitting ? "Menghantar..." : "Dapatkan Sebut Harga Percuma"}
+                    {isSubmitting ? "Menghantar..." : "Hubungi Saya →"}
                   </button>
+
+                  {/* Trust Elements */}
+                  <div className="text-center space-y-1">
+                    <p className="text-xs text-emerald-600">
+                      ✓ 245 pemilik rumah telah semak kelayakan bulan ini
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      🔒 Maklumat anda selamat dan tidak akan dikongsi
+                    </p>
+                  </div>
                 </form>
               )}
             </div>
