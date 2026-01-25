@@ -744,7 +744,7 @@ export default function HousingLoanSettlementCalculator() {
                         Bercakap dengan pakar refinancing. Tiada komitmen.
                       </p>
                       <button
-                        onClick={openModal}
+                        onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
                         Kunci Savings Anda
@@ -769,7 +769,7 @@ export default function HousingLoanSettlementCalculator() {
                         Bercakap dengan pakar refinancing. Tiada komitmen.
                       </p>
                       <button
-                        onClick={openModal}
+                        onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
                         Dapatkan Analisis Percuma
@@ -794,7 +794,7 @@ export default function HousingLoanSettlementCalculator() {
                         Tapi mungkin ada pilihan lain
                       </p>
                       <button
-                        onClick={openModal}
+                        onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-slate-600 hover:bg-slate-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
                         Dapatkan Second Opinion
@@ -913,7 +913,7 @@ export default function HousingLoanSettlementCalculator() {
                   </div>
                 </div>
                 <button
-                  onClick={openModal}
+                  onClick={() => openModal("results_card")}
                   className="w-full py-3 mt-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   Get Free Consultation
@@ -1104,7 +1104,7 @@ export default function HousingLoanSettlementCalculator() {
               Jimat {formatCurrency(calculation.netSavings)}
             </span>
             <button
-              onClick={openModal}
+              onClick={() => openModal("sticky_bar")}
               className="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-50 transition-colors flex items-center gap-1"
             >
               Hubungi Pakar

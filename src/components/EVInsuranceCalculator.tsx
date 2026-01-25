@@ -775,7 +775,7 @@ export default function EVInsuranceCalculator() {
                     ⏰ Harga insurans EV naik setiap tahun - kunci harga anda sekarang
                   </p>
                   <button
-                    onClick={openModal}
+                    onClick={() => openModal("results_card")}
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                   >
                     Dapatkan Sebut Harga Percuma
@@ -911,7 +911,7 @@ export default function EVInsuranceCalculator() {
               Insurans EV: {formatCurrency(calculation.totalPremium + calculation.roadTax)}
             </span>
             <button
-              onClick={openModal}
+              onClick={() => openModal("sticky_bar")}
               className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-colors flex items-center gap-1"
             >
               Sebut Harga

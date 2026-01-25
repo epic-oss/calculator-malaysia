@@ -647,7 +647,7 @@ export default function CarLoanSettlementCalculator() {
                   </div>
                 </div>
                 <button
-                  onClick={openModal}
+                  onClick={() => openModal("results_card")}
                   className="w-full py-3 mt-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors"
                 >
                   Get Advice
