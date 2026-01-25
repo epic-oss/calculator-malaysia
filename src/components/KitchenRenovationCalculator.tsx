@@ -190,6 +190,8 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
     email: "",
     location: "",
   });
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
 
   // Calculate costs
   const calculation = useMemo(() => {
@@ -276,11 +278,17 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
     }
   };
 
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
       const response = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -299,6 +307,10 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
           estimated_cost_max: calculation.total.max,
           timestamp: new Date().toISOString(),
           source_url: typeof window !== "undefined" ? window.location.href : "",
+          device_type: deviceType,
+          cta_source: ctaSource,
+          referrer: typeof document !== "undefined" ? document.referrer : "",
+          landing_page: typeof window !== "undefined" ? window.location.href : "",
         }),
       });
 
@@ -487,7 +499,7 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
                 <h3 className="text-xl font-bold text-slate-900 mb-2">{labels.ctaHeading}</h3>
                 <p className="text-slate-600 text-sm mb-4">{labels.ctaSubtext}</p>
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => openModal("results_card")}
                   className="w-full py-4 bg-orange-600 hover:bg-orange-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   {labels.ctaButton}
@@ -514,6 +526,33 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
           </a>
         </div>
       </div>
+
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-orange-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">{formatRange(calculation.total.min, calculation.total.max)}</p>
+              <p className="text-xs text-white/80">{locale === "bm" ? "Dapatkan sebut harga percuma" : "Get free quote now"}</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-orange-600 font-semibold rounded-lg text-sm"
+            >
+              {locale === "bm" ? "Sebut Harga →" : "Get Quote →"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

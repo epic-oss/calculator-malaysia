@@ -71,6 +71,8 @@ export default function CarInsuranceCalculator() {
     message: "",
   });
   const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
 
   const selectedEngineOption = ENGINE_CC_OPTIONS.find(opt => opt.value === engineCC) || ENGINE_CC_OPTIONS[2];
 
@@ -144,7 +146,8 @@ export default function CarInsuranceCalculator() {
     }, 5000);
   };
 
-  const openModal = () => {
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
     // Capture calculator values BEFORE opening modal
     setCapturedCalc({
       vehicleType,
@@ -168,6 +171,7 @@ export default function CarInsuranceCalculator() {
       return;
     }
 
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
@@ -182,6 +186,10 @@ export default function CarInsuranceCalculator() {
       road_tax: capturedCalc.roadTax,
       coverage_type: capturedCalc.coverageType,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      device_type: deviceType,
+      cta_source: ctaSource,
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {
@@ -546,7 +554,7 @@ export default function CarInsuranceCalculator() {
                     </li>
                   </ul>
                   <button
-                    onClick={openModal}
+                    onClick={() => openModal("results_card")}
                     className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
                   >
                     Get Free Quote
@@ -562,6 +570,33 @@ export default function CarInsuranceCalculator() {
           <InsurersLogoCarousel lang="en" />
         </div>
       </div>
+
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-blue-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">Premium: {formatCurrency(calculation.totalPremium)}</p>
+              <p className="text-xs text-white/80">Get free quote now</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg text-sm"
+            >
+              Sebut Harga →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

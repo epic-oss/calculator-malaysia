@@ -81,6 +81,8 @@ export default function CarRefinanceCalculatorBM() {
     loanRange: "RM30,000 - RM50,000",
     incomeRange: "RM3,000 - RM5,000",
   });
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
 
   // Calculate car equity
   const carEquity = carValue - outstandingLoan;
@@ -163,9 +165,17 @@ export default function CarRefinanceCalculatorBM() {
     }).format(amount);
   };
 
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Determine device type
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
 
     try {
       const response = await fetch(WEBHOOK_URL, {
@@ -183,6 +193,11 @@ export default function CarRefinanceCalculatorBM() {
             monthly_savings: calculation.monthlySavings,
           },
           timestamp: new Date().toISOString(),
+          // Tracking fields
+          device_type: deviceType,
+          cta_source: ctaSource,
+          referrer: typeof document !== "undefined" ? document.referrer : "",
+          landing_page: typeof window !== "undefined" ? window.location.href : "",
         }),
       });
 
@@ -668,7 +683,7 @@ export default function CarRefinanceCalculatorBM() {
                   Bandingkan tawaran dari 10+ bank. Percuma, tanpa komitmen.
                 </p>
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => openModal("results_card")}
                   className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   Semak Kelayakan Saya
@@ -1079,6 +1094,33 @@ export default function CarRefinanceCalculatorBM() {
                 </form>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && calculation.monthlySavings > 50 && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-green-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Tutup"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">Jimat {formatCurrency(calculation.monthlySavings)}/bulan</p>
+              <p className="text-xs text-white/80">Semak kelayakan sekarang</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-green-600 font-semibold rounded-lg text-sm"
+            >
+              Semak →
+            </button>
           </div>
         </div>
       )}

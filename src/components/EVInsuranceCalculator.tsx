@@ -12,6 +12,9 @@ interface CapturedCalculation {
   annualPremium: number;
   roadTax: number;
   coverageType: string;
+  totalAmount: number;
+  region: string;
+  powerOutput: number;
 }
 
 const VEHICLE_MODELS = {
@@ -103,6 +106,7 @@ export default function EVInsuranceCalculator() {
   const [llpnEnabled, setLlpnEnabled] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -208,6 +212,9 @@ export default function EVInsuranceCalculator() {
       annualPremium: Math.round(calculation.totalPremium),
       roadTax: Math.round(calculation.roadTax),
       coverageType: coverageType === "comprehensive" ? "Comprehensive" : "Third Party",
+      totalAmount: Math.round(calculation.totalPremium + calculation.roadTax),
+      region: region === "peninsular" ? "Peninsular Malaysia" : "Sabah/Sarawak",
+      powerOutput,
     });
     setShowModal(true);
   };
@@ -229,11 +236,14 @@ export default function EVInsuranceCalculator() {
       email: formData.email,
       calculator_type: "ev_insurance",
       vehicle_value: capturedCalc.vehicleValue,
-      vehicle_type: capturedCalc.vehicleModel,
+      vehicle_model: capturedCalc.vehicleModel,
       ncd_percent: capturedCalc.ncdPercent,
-      annual_premium: capturedCalc.annualPremium,
+      calculated_premium: capturedCalc.annualPremium,
       road_tax: capturedCalc.roadTax,
       coverage_type: capturedCalc.coverageType,
+      total_amount: capturedCalc.totalAmount,
+      region: capturedCalc.region,
+      power_output: capturedCalc.powerOutput,
       source_url: typeof window !== "undefined" ? window.location.href : "",
     };
 
@@ -739,31 +749,42 @@ export default function EVInsuranceCalculator() {
                 </div>
 
                 {/* CTA Card */}
-                <div className="mt-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-2xl">🎯</span>
-                    <h3 className="text-lg font-bold text-slate-800">Get Free Quote</h3>
+                    <h3 className="text-lg font-bold text-blue-800">
+                      Dapatkan Sebut Harga {formatCurrency(calculation.totalPremium + calculation.roadTax)} Sekarang
+                    </h3>
                   </div>
                   <ul className="space-y-2 mb-4">
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                    <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Compare prices from 15+ insurers
+                      Bandingkan harga dari Allianz, MSIG, Zurich, Etiqa
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                    <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Save up to 25% vs direct purchase
+                      Jimat sehingga 30% vs harga pasaran
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-slate-600">
+                    <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Free claims assistance
+                      Sebut harga dalam 24 jam - percuma
                     </li>
                   </ul>
+                  {/* Urgency */}
+                  <p className="text-xs text-amber-600 font-medium mb-4">
+                    ⏰ Harga insurans EV naik setiap tahun - kunci harga anda sekarang
+                  </p>
                   <button
                     onClick={openModal}
-                    className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors"
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    Get Free Quote
+                    Dapatkan Sebut Harga Percuma
+                    <span>→</span>
                   </button>
+                  {/* Social Proof */}
+                  <p className="text-xs text-blue-600 text-center mt-3">
+                    ✓ 200+ pemilik EV telah dapatkan sebut harga bulan ini
+                  </p>
                 </div>
               </div>
             </div>
@@ -872,9 +893,37 @@ export default function EVInsuranceCalculator() {
         </div>
       )}
 
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-blue-600 shadow-lg safe-area-bottom">
+          {/* Close button */}
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <span className="text-white font-semibold text-sm">
+              Insurans EV: {formatCurrency(calculation.totalPremium + calculation.roadTax)}
+            </span>
+            <button
+              onClick={openModal}
+              className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-colors flex items-center gap-1"
+            >
+              Sebut Harga
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notification */}
       {toast.show && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
           <div
             className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg ${
               toast.type === "success"

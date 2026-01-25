@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 
 const TENURE_OPTIONS = [5, 10, 15, 20, 25, 30, 35];
 const LOCKIN_OPTIONS = [0, 3, 5];
@@ -14,6 +14,8 @@ interface CapturedCalculation {
   potentialSavings: number;
   interestRate: number;
   yearsRemaining: number;
+  monthlyPayment: number;
+  yearsPaid: number;
 }
 
 export default function HousingLoanSettlementCalculator() {
@@ -25,10 +27,16 @@ export default function HousingLoanSettlementCalculator() {
   const [lockInPeriod, setLockInPeriod] = useState(3);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showExitPopup, setShowExitPopup] = useState(false);
+  const [exitPopupShown, setExitPopupShown] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
   const [formData, setFormData] = useState({
     fullName: "",
     whatsapp: "+60",
-    email: "",
+  });
+  const [exitFormData, setExitFormData] = useState({
+    whatsapp: "+60",
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,8 +149,79 @@ export default function HousingLoanSettlementCalculator() {
       potentialSavings: Math.round(calculation.netSavings),
       interestRate,
       yearsRemaining: Math.round(calculation.remainingMonths / 12),
+      monthlyPayment: Math.round(calculation.monthlyPayment),
+      yearsPaid,
     });
     setShowModal(true);
+  };
+
+  // Track user interaction (any input change)
+  const handleInputChange = useCallback(() => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  }, [hasInteracted]);
+
+  // Exit intent detection (desktop only)
+  useEffect(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      // Only trigger on exit through top of page
+      if (e.clientY <= 0 && !exitPopupShown && !showModal && calculation.netSavings > 50000) {
+        setShowExitPopup(true);
+        setExitPopupShown(true);
+      }
+    };
+
+    // Only add listener on desktop
+    if (typeof window !== "undefined" && window.innerWidth > 768) {
+      document.addEventListener("mouseleave", handleMouseLeave);
+    }
+
+    return () => {
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [exitPopupShown, showModal, calculation.netSavings]);
+
+  const handleExitFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const leadData = {
+      timestamp: new Date().toISOString(),
+      name: "Exit Intent Lead",
+      whatsapp: exitFormData.whatsapp,
+      calculator_type: "early_settlement_calculator",
+      source: "exit_intent_popup",
+      loan_amount: loanAmount,
+      outstanding: Math.round(calculation.outstandingBalance),
+      settlement_amount: Math.round(calculation.settlementAmount),
+      savings_amount: Math.round(calculation.netSavings),
+      interest_rate: interestRate,
+      years_remaining: Math.round(calculation.remainingMonths / 12),
+      monthly_payment: Math.round(calculation.monthlyPayment),
+      years_paid: yearsPaid,
+      source_url: typeof window !== "undefined" ? window.location.href : "",
+    };
+
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+
+      if (response.ok) {
+        setShowExitPopup(false);
+        showToast("success", "Terima kasih! Kami akan hubungi anda dalam 24 jam");
+      } else {
+        showToast("error", "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      showToast("error", "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -159,14 +238,16 @@ export default function HousingLoanSettlementCalculator() {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
       whatsapp: formData.whatsapp,
-      email: formData.email,
-      calculator_type: "housing_loan_settlement",
+      calculator_type: "early_settlement_calculator",
+      source: "main_form",
       loan_amount: capturedCalc.loanAmount,
-      outstanding: capturedCalc.outstanding,
+      outstanding_balance: capturedCalc.outstanding,
       settlement_amount: capturedCalc.settlementAmount,
-      potential_savings: capturedCalc.potentialSavings,
+      total_savings: capturedCalc.potentialSavings,
       interest_rate: capturedCalc.interestRate,
       years_remaining: capturedCalc.yearsRemaining,
+      monthly_payment: capturedCalc.monthlyPayment,
+      years_paid: capturedCalc.yearsPaid,
       source_url: typeof window !== "undefined" ? window.location.href : "",
     };
 
@@ -197,7 +278,7 @@ export default function HousingLoanSettlementCalculator() {
   const closeModal = () => {
     setShowModal(false);
     setFormSubmitted(false);
-    setFormData({ fullName: "", whatsapp: "+60", email: "" });
+    setFormData({ fullName: "", whatsapp: "+60" });
     setCapturedCalc(null);
   };
 
@@ -239,6 +320,7 @@ export default function HousingLoanSettlementCalculator() {
                     type="text"
                     value={loanAmount.toLocaleString("en-MY")}
                     onChange={(e) => {
+                      handleInputChange();
                       const value = parseInt(e.target.value.replace(/,/g, ""));
                       if (!isNaN(value) && value >= 50000 && value <= 2000000) {
                         setLoanAmount(value);
@@ -252,7 +334,10 @@ export default function HousingLoanSettlementCalculator() {
                     max="2000000"
                     step="10000"
                     value={loanAmount}
-                    onChange={(e) => setLoanAmount(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      handleInputChange();
+                      setLoanAmount(parseInt(e.target.value));
+                    }}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   />
                   <div className="flex justify-between text-xs text-slate-500">
@@ -272,6 +357,7 @@ export default function HousingLoanSettlementCalculator() {
                     type="number"
                     value={interestRate}
                     onChange={(e) => {
+                      handleInputChange();
                       const value = parseFloat(e.target.value);
                       if (!isNaN(value) && value >= 2.5 && value <= 7) {
                         setInterestRate(value);
@@ -288,7 +374,10 @@ export default function HousingLoanSettlementCalculator() {
                     max="7"
                     step="0.1"
                     value={interestRate}
-                    onChange={(e) => setInterestRate(parseFloat(e.target.value))}
+                    onChange={(e) => {
+                      handleInputChange();
+                      setInterestRate(parseFloat(e.target.value));
+                    }}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   />
                   <div className="flex justify-between text-xs text-slate-500">
@@ -306,6 +395,7 @@ export default function HousingLoanSettlementCalculator() {
                 <select
                   value={originalTenure}
                   onChange={(e) => {
+                    handleInputChange();
                     const newTenure = parseInt(e.target.value);
                     setOriginalTenure(newTenure);
                     if (yearsPaid >= newTenure) {
@@ -332,6 +422,7 @@ export default function HousingLoanSettlementCalculator() {
                     type="number"
                     value={yearsPaid}
                     onChange={(e) => {
+                      handleInputChange();
                       const value = parseInt(e.target.value);
                       if (
                         !isNaN(value) &&
@@ -351,7 +442,10 @@ export default function HousingLoanSettlementCalculator() {
                     max={originalTenure - 1}
                     step="1"
                     value={yearsPaid}
-                    onChange={(e) => setYearsPaid(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      handleInputChange();
+                      setYearsPaid(parseInt(e.target.value));
+                    }}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   />
                   <div className="flex justify-between text-xs text-slate-500">
@@ -368,7 +462,10 @@ export default function HousingLoanSettlementCalculator() {
                 </label>
                 <select
                   value={lockInPeriod}
-                  onChange={(e) => setLockInPeriod(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    handleInputChange();
+                    setLockInPeriod(parseInt(e.target.value));
+                  }}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 >
                   {LOCKIN_OPTIONS.map((period) => (
@@ -392,6 +489,7 @@ export default function HousingLoanSettlementCalculator() {
                     type="number"
                     value={penaltyPercentage}
                     onChange={(e) => {
+                      handleInputChange();
                       const value = parseFloat(e.target.value);
                       if (!isNaN(value) && value >= 0 && value <= 5) {
                         setPenaltyPercentage(value);
@@ -408,9 +506,10 @@ export default function HousingLoanSettlementCalculator() {
                     max="5"
                     step="0.5"
                     value={penaltyPercentage}
-                    onChange={(e) =>
-                      setPenaltyPercentage(parseFloat(e.target.value))
-                    }
+                    onChange={(e) => {
+                      handleInputChange();
+                      setPenaltyPercentage(parseFloat(e.target.value));
+                    }}
                     className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                   />
                   <div className="flex justify-between text-xs text-slate-500">
@@ -634,6 +733,80 @@ export default function HousingLoanSettlementCalculator() {
                     </div>
                   </div>
 
+                  {/* Inline CTA - Conditional based on savings amount */}
+                  {calculation.netSavings > 50000 ? (
+                    // High savings (>RM50,000)
+                    <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-r-xl p-4">
+                      <p className="font-bold text-green-800 text-lg">
+                        🎉 Anda boleh jimat {formatCurrency(calculation.netSavings)}!
+                      </p>
+                      <p className="text-sm text-green-700 mt-1">
+                        Bercakap dengan pakar refinancing. Tiada komitmen.
+                      </p>
+                      <button
+                        onClick={openModal}
+                        className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        Kunci Savings Anda
+                        <span>→</span>
+                      </button>
+                      {/* Social Proof */}
+                      <p className="text-xs text-green-600 text-center mt-3">
+                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                      </p>
+                      {/* Urgency */}
+                      <p className="text-xs text-amber-600 text-center mt-1 font-medium">
+                        ⏰ Kadar OPR dijangka naik - kunci savings anda sekarang
+                      </p>
+                    </div>
+                  ) : calculation.netSavings >= 10000 ? (
+                    // Medium savings (RM10,000 - RM50,000)
+                    <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-r-xl p-4">
+                      <p className="font-bold text-green-800 text-lg">
+                        Jimat {formatCurrency(calculation.netSavings)} - Nak Tahu Caranya?
+                      </p>
+                      <p className="text-sm text-green-700 mt-1">
+                        Bercakap dengan pakar refinancing. Tiada komitmen.
+                      </p>
+                      <button
+                        onClick={openModal}
+                        className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        Dapatkan Analisis Percuma
+                        <span>→</span>
+                      </button>
+                      {/* Social Proof */}
+                      <p className="text-xs text-green-600 text-center mt-3">
+                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                      </p>
+                      {/* Urgency */}
+                      <p className="text-xs text-amber-600 text-center mt-1 font-medium">
+                        ⏰ Kadar OPR dijangka naik - kunci savings anda sekarang
+                      </p>
+                    </div>
+                  ) : (
+                    // Low/negative savings (<RM10,000)
+                    <div className="mt-4 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl p-4">
+                      <p className="font-bold text-slate-800 text-lg">
+                        Settlement mungkin tak berbaloi
+                      </p>
+                      <p className="text-sm text-slate-600 mt-1">
+                        Tapi mungkin ada pilihan lain
+                      </p>
+                      <button
+                        onClick={openModal}
+                        className="w-full py-3 mt-3 bg-slate-600 hover:bg-slate-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        Dapatkan Second Opinion
+                        <span>→</span>
+                      </button>
+                      {/* Social Proof */}
+                      <p className="text-xs text-slate-500 text-center mt-3">
+                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                      </p>
+                    </div>
+                  )}
+
                   {/* Breakdown Toggle */}
                   <button
                     onClick={() => setShowBreakdown(!showBreakdown)}
@@ -816,7 +989,7 @@ export default function HousingLoanSettlementCalculator() {
                   <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Full Name
+                        Nama
                       </label>
                       <input
                         type="text"
@@ -825,14 +998,14 @@ export default function HousingLoanSettlementCalculator() {
                         onChange={(e) =>
                           setFormData({ ...formData, fullName: e.target.value })
                         }
-                        placeholder="Your full name"
+                        placeholder="Nama penuh anda"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        WhatsApp Number
+                        No. WhatsApp
                       </label>
                       <input
                         type="tel"
@@ -846,34 +1019,22 @@ export default function HousingLoanSettlementCalculator() {
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        placeholder="your@email.com"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
                     <button
                       type="submit"
                       disabled={isSubmitting}
                       className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
                     >
-                      {isSubmitting ? "Submitting..." : "Get Free Consultation"}
+                      {isSubmitting ? "Menghantar..." : "Dapatkan Konsultasi Percuma"}
                     </button>
                   </form>
 
-                  <p className="text-xs text-slate-400 text-center mt-4">
-                    By submitting, you agree to be contacted by our loan
-                    specialists.
+                  {/* Social Proof */}
+                  <p className="text-xs text-green-600 text-center mt-3">
+                    ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                  </p>
+
+                  <p className="text-xs text-slate-400 text-center mt-2">
+                    Dengan menghantar, anda bersetuju untuk dihubungi oleh pakar pinjaman kami.
                   </p>
                 </div>
               </>
@@ -901,7 +1062,7 @@ export default function HousingLoanSettlementCalculator() {
 
       {/* Toast Notification */}
       {toast.show && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
           <div
             className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg ${
               toast.type === "success"
@@ -921,6 +1082,89 @@ export default function HousingLoanSettlementCalculator() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Mobile CTA - Only show on mobile after calculation */}
+      {hasInteracted && showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-green-600 shadow-lg safe-area-bottom">
+          {/* Close button */}
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <span className="text-white font-semibold">
+              Jimat {formatCurrency(calculation.netSavings)}
+            </span>
+            <button
+              onClick={openModal}
+              className="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-50 transition-colors flex items-center gap-1"
+            >
+              Hubungi Pakar
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Intent Popup (Desktop Only) */}
+      {showExitPopup && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[70] p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <button
+                onClick={() => setShowExitPopup(false)}
+                className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="text-center mb-6">
+                <span className="text-5xl mb-4 block">💰</span>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                  Jangan lepaskan peluang jimat {formatCurrency(calculation.netSavings)}
+                </h3>
+                <p className="text-slate-600">
+                  Tinggalkan nombor WhatsApp, kami hubungi dalam 24 jam
+                </p>
+              </div>
+
+              <form onSubmit={handleExitFormSubmit} className="space-y-4">
+                <div>
+                  <input
+                    type="tel"
+                    required
+                    value={exitFormData.whatsapp}
+                    onChange={(e) => setExitFormData({ whatsapp: e.target.value })}
+                    placeholder="No. WhatsApp (+60123456789)"
+                    className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-bold text-lg transition-colors"
+                >
+                  {isSubmitting ? "Menghantar..." : "Hantar"}
+                </button>
+              </form>
+
+              <button
+                onClick={() => setShowExitPopup(false)}
+                className="w-full py-2 mt-3 text-slate-500 hover:text-slate-700 text-sm transition-colors"
+              >
+                Tidak, terima kasih
+              </button>
+            </div>
           </div>
         </div>
       )}

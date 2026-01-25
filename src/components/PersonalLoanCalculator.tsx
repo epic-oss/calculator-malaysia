@@ -13,7 +13,11 @@ interface CapturedCalculation {
   dsrPercent: number;
 }
 
-const TENURE_OPTIONS = [
+interface PersonalLoanCalculatorProps {
+  locale?: "en" | "ms";
+}
+
+const TENURE_OPTIONS_EN = [
   { label: "1 Year", value: 1 },
   { label: "2 Years", value: 2 },
   { label: "3 Years", value: 3 },
@@ -22,7 +26,99 @@ const TENURE_OPTIONS = [
   { label: "7 Years", value: 7 },
 ];
 
-export default function PersonalLoanCalculator() {
+const TENURE_OPTIONS_MS = [
+  { label: "1 Tahun", value: 1 },
+  { label: "2 Tahun", value: 2 },
+  { label: "3 Tahun", value: 3 },
+  { label: "4 Tahun", value: 4 },
+  { label: "5 Tahun", value: 5 },
+  { label: "7 Tahun", value: 7 },
+];
+
+const translations = {
+  en: {
+    title: "Personal Loan Calculator Malaysia 2026 | Based on Salary & DSR",
+    subtitle: "Calculate your monthly payment and check eligibility instantly",
+    loanAmount: "Loan Amount (RM)",
+    interestRate: "Interest Rate (% per annum)",
+    loanTenure: "Loan Tenure",
+    monthlyIncome: "Monthly Income (RM)",
+    loanSummary: "Your Loan Summary",
+    monthlyPayment: "Monthly Payment",
+    forYears: "for",
+    years: "years",
+    year: "year",
+    months: "months",
+    loanAmountLabel: "Loan Amount",
+    totalInterest: "Total Interest",
+    totalRepayment: "Total Repayment",
+    dsr: "Debt Service Ratio (DSR)",
+    yourDsr: "Your DSR",
+    limit: "limit",
+    likelyEligible: "Likely Eligible",
+    mayNotQualify: "May Not Qualify",
+    dsrWithinRange: "Your DSR is within acceptable range",
+    dsrExceeds: "DSR exceeds 70%. Try lower amount or longer tenure",
+    talkToExpert: "Talk to Loan Expert",
+    freeConsultation: "Free consultation + best rate comparison",
+    getExpertAdvice: "Get Expert Advice",
+    modalTitle: "Get Expert Advice",
+    fullName: "Full Name *",
+    email: "Email *",
+    whatsapp: "WhatsApp Number *",
+    tenure: "Tenure",
+    getConsultation: "Get Free Consultation",
+    submitting: "Submitting...",
+    submitNote: "By submitting, you agree to be contacted by our loan advisors.",
+    successMessage: "Thanks! Our loan expert will WhatsApp you within 24 hours",
+    errorMessage: "Something went wrong. Please try again.",
+    enterName: "Enter your full name",
+    enterEmail: "your@email.com",
+  },
+  ms: {
+    title: "Kalkulator Pinjaman Peribadi Malaysia 2026 | Berdasarkan Gaji & DSR",
+    subtitle: "Kira bayaran bulanan dan semak kelayakan anda dengan segera",
+    loanAmount: "Jumlah Pinjaman (RM)",
+    interestRate: "Kadar Faedah (% setahun)",
+    loanTenure: "Tempoh Pinjaman",
+    monthlyIncome: "Pendapatan Bulanan (RM)",
+    loanSummary: "Ringkasan Pinjaman Anda",
+    monthlyPayment: "Bayaran Bulanan",
+    forYears: "untuk",
+    years: "tahun",
+    year: "tahun",
+    months: "bulan",
+    loanAmountLabel: "Jumlah Pinjaman",
+    totalInterest: "Jumlah Faedah",
+    totalRepayment: "Jumlah Bayaran Balik",
+    dsr: "Nisbah Khidmat Hutang (DSR)",
+    yourDsr: "DSR Anda",
+    limit: "had",
+    likelyEligible: "Berkemungkinan Layak",
+    mayNotQualify: "Mungkin Tidak Layak",
+    dsrWithinRange: "DSR anda dalam julat yang diterima",
+    dsrExceeds: "DSR melebihi 70%. Cuba jumlah lebih rendah atau tempoh lebih lama",
+    talkToExpert: "Berbincang dengan Pakar Pinjaman",
+    freeConsultation: "Perundingan percuma + perbandingan kadar terbaik",
+    getExpertAdvice: "Dapatkan Nasihat Pakar",
+    modalTitle: "Dapatkan Nasihat Pakar",
+    fullName: "Nama Penuh *",
+    email: "Emel *",
+    whatsapp: "Nombor WhatsApp *",
+    tenure: "Tempoh",
+    getConsultation: "Dapatkan Perundingan Percuma",
+    submitting: "Menghantar...",
+    submitNote: "Dengan menghantar, anda bersetuju untuk dihubungi oleh penasihat pinjaman kami.",
+    successMessage: "Terima kasih! Pakar pinjaman kami akan WhatsApp anda dalam 24 jam",
+    errorMessage: "Sesuatu telah berlaku. Sila cuba lagi.",
+    enterName: "Masukkan nama penuh anda",
+    enterEmail: "emel@anda.com",
+  },
+};
+
+export default function PersonalLoanCalculator({ locale = "en" }: PersonalLoanCalculatorProps) {
+  const t = translations[locale];
+  const TENURE_OPTIONS = locale === "ms" ? TENURE_OPTIONS_MS : TENURE_OPTIONS_EN;
   const [loanAmount, setLoanAmount] = useState(30000);
   const [interestRate, setInterestRate] = useState(8);
   const [tenureYears, setTenureYears] = useState(3);
@@ -40,6 +136,8 @@ export default function PersonalLoanCalculator() {
     message: "",
   });
   const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
 
   const calculation = useMemo(() => {
     // Flat rate calculation (common for Malaysian personal loans)
@@ -70,14 +168,16 @@ export default function PersonalLoanCalculator() {
     }).format(amount);
   };
 
-  const showToast = (type: "success" | "error", message: string) => {
+  const showToast = (type: "success" | "error", messageKey: "success" | "error") => {
+    const message = messageKey === "success" ? t.successMessage : t.errorMessage;
     setToast({ show: true, type, message });
     setTimeout(() => {
       setToast((prev) => ({ ...prev, show: false }));
     }, 5000);
   };
 
-  const openModal = () => {
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
     setCapturedCalc({
       loanAmount,
       interestRate,
@@ -94,11 +194,12 @@ export default function PersonalLoanCalculator() {
     setIsSubmitting(true);
 
     if (!capturedCalc) {
-      showToast("error", "Something went wrong. Please try again.");
+      showToast("error", "error");
       setIsSubmitting(false);
       return;
     }
 
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
@@ -112,6 +213,11 @@ export default function PersonalLoanCalculator() {
       monthly_payment: capturedCalc.monthlyPayment,
       dsr_percent: capturedCalc.dsrPercent,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      locale: locale,
+      device_type: deviceType,
+      cta_source: ctaSource,
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {
@@ -125,14 +231,14 @@ export default function PersonalLoanCalculator() {
 
       if (response.ok) {
         closeModal();
-        showToast("success", "Thanks! Our loan expert will WhatsApp you within 24 hours");
+        showToast("success", "success");
       } else {
         console.error("Webhook error:", response.status, response.statusText);
-        showToast("error", "Something went wrong. Please try again.");
+        showToast("error", "error");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      showToast("error", "Something went wrong. Please try again.");
+      showToast("error", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -148,10 +254,10 @@ export default function PersonalLoanCalculator() {
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">
-          Personal Loan Calculator
+          {t.title}
         </h1>
         <p className="text-center text-slate-500 mb-8">
-          Calculate your monthly payment and check eligibility instantly
+          {t.subtitle}
         </p>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -161,7 +267,7 @@ export default function PersonalLoanCalculator() {
               {/* Loan Amount */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Loan Amount (RM)
+                  {t.loanAmount}
                 </label>
                 <div className="space-y-3">
                   <input
@@ -191,7 +297,7 @@ export default function PersonalLoanCalculator() {
               {/* Interest Rate */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Interest Rate (% per annum)
+                  {t.interestRate}
                 </label>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -225,7 +331,7 @@ export default function PersonalLoanCalculator() {
               {/* Loan Tenure */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Loan Tenure
+                  {t.loanTenure}
                 </label>
                 <select
                   value={tenureYears}
@@ -243,7 +349,7 @@ export default function PersonalLoanCalculator() {
               {/* Monthly Income */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Monthly Income (RM)
+                  {t.monthlyIncome}
                 </label>
                 <div className="space-y-3">
                   <input
@@ -277,32 +383,32 @@ export default function PersonalLoanCalculator() {
             <div className="lg:sticky lg:top-8">
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold text-slate-700 mb-4">
-                  Your Loan Summary
+                  {t.loanSummary}
                 </h2>
 
                 {/* Main Payment Display */}
                 <div className="text-center py-6 mb-4 bg-gradient-to-br from-emerald-50 to-slate-50 rounded-xl">
-                  <p className="text-sm text-slate-500 mb-1">Monthly Payment</p>
+                  <p className="text-sm text-slate-500 mb-1">{t.monthlyPayment}</p>
                   <p className="text-4xl font-bold text-emerald-600">
                     {formatCurrency(calculation.monthlyPayment)}
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
-                    for {tenureYears} year{tenureYears > 1 ? "s" : ""} ({tenureYears * 12} months)
+                    {t.forYears} {tenureYears} {tenureYears > 1 ? t.years : t.year} ({tenureYears * 12} {t.months})
                   </p>
                 </div>
 
                 {/* Loan Details */}
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm p-3 bg-slate-50 rounded-xl">
-                    <span className="text-slate-500">Loan Amount</span>
+                    <span className="text-slate-500">{t.loanAmountLabel}</span>
                     <span className="text-slate-700 font-medium">{formatCurrency(loanAmount)}</span>
                   </div>
                   <div className="flex justify-between text-sm p-3 bg-slate-50 rounded-xl">
-                    <span className="text-slate-500">Total Interest</span>
+                    <span className="text-slate-500">{t.totalInterest}</span>
                     <span className="text-slate-700 font-medium">{formatCurrency(calculation.totalInterest)}</span>
                   </div>
                   <div className="flex justify-between text-sm p-3 bg-slate-50 rounded-xl">
-                    <span className="text-slate-500">Total Repayment</span>
+                    <span className="text-slate-500">{t.totalRepayment}</span>
                     <span className="text-slate-700 font-bold">{formatCurrency(calculation.totalRepayment)}</span>
                   </div>
                 </div>
@@ -310,13 +416,13 @@ export default function PersonalLoanCalculator() {
                 {/* DSR & Eligibility Section */}
                 <div className="border-t border-slate-100 pt-6">
                   <h3 className="text-sm font-semibold text-slate-700 mb-3">
-                    Debt Service Ratio (DSR)
+                    {t.dsr}
                   </h3>
 
                   {/* DSR Progress Bar */}
                   <div className="mb-4">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-500">Your DSR</span>
+                      <span className="text-slate-500">{t.yourDsr}</span>
                       <span className={`font-bold ${calculation.isEligible ? "text-emerald-600" : "text-red-600"}`}>
                         {calculation.dsrPercent.toFixed(1)}%
                       </span>
@@ -335,7 +441,7 @@ export default function PersonalLoanCalculator() {
                     </div>
                     <div className="flex justify-between text-xs text-slate-400 mt-1">
                       <span>0%</span>
-                      <span className="text-amber-500">70% limit</span>
+                      <span className="text-amber-500">70% {t.limit}</span>
                       <span>100%</span>
                     </div>
                   </div>
@@ -362,12 +468,12 @@ export default function PersonalLoanCalculator() {
                       </div>
                       <div>
                         <p className={`font-semibold ${calculation.isEligible ? "text-emerald-800" : "text-red-800"}`}>
-                          {calculation.isEligible ? "Likely Eligible" : "May Not Qualify"}
+                          {calculation.isEligible ? t.likelyEligible : t.mayNotQualify}
                         </p>
                         <p className={`text-sm ${calculation.isEligible ? "text-emerald-600" : "text-red-600"}`}>
                           {calculation.isEligible
-                            ? "Your DSR is within acceptable range"
-                            : "DSR exceeds 70%. Try lower amount or longer tenure"}
+                            ? t.dsrWithinRange
+                            : t.dsrExceeds}
                         </p>
                       </div>
                     </div>
@@ -379,15 +485,15 @@ export default function PersonalLoanCalculator() {
                   <div className="flex items-start gap-4">
                     <div className="text-4xl">💬</div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-slate-800 mb-1">Talk to Loan Expert</h3>
-                      <p className="text-sm text-slate-500">Free consultation + best rate comparison</p>
+                      <h3 className="text-lg font-bold text-slate-800 mb-1">{t.talkToExpert}</h3>
+                      <p className="text-sm text-slate-500">{t.freeConsultation}</p>
                     </div>
                   </div>
                   <button
-                    onClick={openModal}
+                    onClick={() => openModal("results_card")}
                     className="w-full py-3 mt-4 bg-emerald-600 hover:bg-emerald-700 rounded-xl text-white font-semibold transition-colors"
                   >
-                    Get Expert Advice
+                    {t.getExpertAdvice}
                   </button>
                 </div>
               </div>
@@ -396,13 +502,40 @@ export default function PersonalLoanCalculator() {
         </div>
       </div>
 
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && calculation.isEligible && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-green-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">{formatCurrency(calculation.monthlyPayment)}/mo</p>
+              <p className="text-xs text-white/80">DSR {calculation.dsrPercent.toFixed(1)}% - {locale === "ms" ? "Layak" : "Eligible"}</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-green-600 font-semibold rounded-lg text-sm"
+            >
+              {locale === "ms" ? "Semak →" : "Check →"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100">
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold text-slate-800">Get Expert Advice</h3>
+                <h3 className="text-xl font-bold text-slate-800">{t.modalTitle}</h3>
                 <button
                   onClick={closeModal}
                   className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
@@ -419,15 +552,15 @@ export default function PersonalLoanCalculator() {
               {capturedCalc && (
                 <div className="mb-6 p-4 bg-slate-50 rounded-xl space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Loan Amount</span>
+                    <span className="text-slate-500">{t.loanAmountLabel}</span>
                     <span className="text-slate-700 font-medium">{formatCurrency(capturedCalc.loanAmount)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Tenure</span>
-                    <span className="text-slate-700 font-medium">{capturedCalc.tenureYears} years</span>
+                    <span className="text-slate-500">{t.tenure}</span>
+                    <span className="text-slate-700 font-medium">{capturedCalc.tenureYears} {t.years}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Monthly Payment</span>
+                    <span className="text-slate-500">{t.monthlyPayment}</span>
                     <span className="text-emerald-600 font-bold">{formatCurrency(capturedCalc.monthlyPayment)}</span>
                   </div>
                 </div>
@@ -436,35 +569,35 @@ export default function PersonalLoanCalculator() {
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Full Name *
+                    {t.fullName}
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="Enter your full name"
+                    placeholder={t.enterName}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Email *
+                    {t.email}
                   </label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="your@email.com"
+                    placeholder={t.enterEmail}
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    WhatsApp Number *
+                    {t.whatsapp}
                   </label>
                   <input
                     type="tel"
@@ -481,12 +614,12 @@ export default function PersonalLoanCalculator() {
                   disabled={isSubmitting}
                   className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
                 >
-                  {isSubmitting ? "Submitting..." : "Get Free Consultation"}
+                  {isSubmitting ? t.submitting : t.getConsultation}
                 </button>
               </form>
 
               <p className="text-xs text-slate-400 text-center mt-4">
-                By submitting, you agree to be contacted by our loan advisors.
+                {t.submitNote}
               </p>
             </div>
           </div>

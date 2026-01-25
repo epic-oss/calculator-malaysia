@@ -42,6 +42,7 @@ export default function MotorcycleInsuranceCalculator({
   const [coverageType, setCoverageType] = useState<"third-party" | "comprehensive">("third-party");
   const [region, setRegion] = useState<"peninsular" | "sabah-sarawak">("peninsular");
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
 
   const selectedEngineOption = ENGINE_CC_OPTIONS.find(opt => opt.value === engineCC) || ENGINE_CC_OPTIONS[0];
 
@@ -376,6 +377,35 @@ export default function MotorcycleInsuranceCalculator({
           <InsurersLogoCarousel lang={lang} />
         </div>
       </div>
+
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-blue-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">Premium: {formatCurrency(calculation.totalPremium)}</p>
+              <p className="text-xs text-white/80">{lang === "ms" ? "Dapatkan sebut harga percuma" : "Get free quote now"}</p>
+            </div>
+            <a
+              href="https://bjak.my/en/motorcycle-insurance?p=OOI-YING-JYE-AT9T1T"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg text-sm"
+            >
+              {lang === "ms" ? "Sebut Harga →" : "Get Quote →"}
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

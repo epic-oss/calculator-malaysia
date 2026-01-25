@@ -35,6 +35,8 @@ export default function CarLoanSettlementCalculator() {
     message: "",
   });
   const [capturedCalc, setCapturedCalc] = useState<CapturedCalculation | null>(null);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
 
   const calculation = useMemo(() => {
     // Car loans in Malaysia typically use flat rate interest
@@ -121,7 +123,8 @@ export default function CarLoanSettlementCalculator() {
     }, 5000);
   };
 
-  const openModal = () => {
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
     setCapturedCalc({
       carPrice,
       outstanding: Math.round(calculation.outstandingBalance),
@@ -143,6 +146,9 @@ export default function CarLoanSettlementCalculator() {
       return;
     }
 
+    // Determine device type
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
+
     const leadData = {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
@@ -156,6 +162,11 @@ export default function CarLoanSettlementCalculator() {
       interest_rate: capturedCalc.interestRate,
       years_remaining: capturedCalc.yearsRemaining,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      // Tracking fields
+      device_type: deviceType,
+      cta_source: ctaSource,
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {
@@ -769,9 +780,36 @@ export default function CarLoanSettlementCalculator() {
         </div>
       )}
 
+      {/* Sticky Mobile CTA */}
+      {showStickyCTA && calculation.netSavings > 1000 && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-green-600 shadow-lg safe-area-bottom">
+          <button
+            onClick={() => setShowStickyCTA(false)}
+            className="absolute top-1 right-1 p-1 text-white/70 hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="flex items-center justify-between py-3 px-4">
+            <div className="text-white">
+              <p className="font-semibold">Jimat {formatCurrency(calculation.netSavings)}</p>
+              <p className="text-xs text-white/80">Semak kelayakan sekarang</p>
+            </div>
+            <button
+              onClick={() => openModal("sticky_bar")}
+              className="px-4 py-2 bg-white text-green-600 font-semibold rounded-lg text-sm"
+            >
+              Semak →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notification */}
       {toast.show && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-bottom-4 fade-in duration-300">
           <div
             className={`flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg ${
               toast.type === "success"
