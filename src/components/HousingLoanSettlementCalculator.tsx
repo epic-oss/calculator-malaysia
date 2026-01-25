@@ -31,6 +31,7 @@ export default function HousingLoanSettlementCalculator() {
   const [exitPopupShown, setExitPopupShown] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
   const [formData, setFormData] = useState({
     fullName: "",
     whatsapp: "+60",
@@ -140,7 +141,8 @@ export default function HousingLoanSettlementCalculator() {
     }, 5000);
   };
 
-  const openModal = () => {
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
     // Capture calculator values BEFORE opening modal
     setCapturedCalc({
       loanAmount,
@@ -234,6 +236,7 @@ export default function HousingLoanSettlementCalculator() {
       return;
     }
 
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
@@ -249,6 +252,10 @@ export default function HousingLoanSettlementCalculator() {
       monthly_payment: capturedCalc.monthlyPayment,
       years_paid: capturedCalc.yearsPaid,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      device_type: deviceType,
+      cta_source: ctaSource,
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {

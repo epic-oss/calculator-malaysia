@@ -107,6 +107,7 @@ export default function EVInsuranceCalculator() {
 
   const [showModal, setShowModal] = useState(false);
   const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -204,7 +205,8 @@ export default function EVInsuranceCalculator() {
     }, 5000);
   };
 
-  const openModal = () => {
+  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+    setCtaSource(source);
     setCapturedCalc({
       vehicleModel,
       vehicleValue: marketValue,
@@ -229,6 +231,7 @@ export default function EVInsuranceCalculator() {
       return;
     }
 
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
       name: formData.fullName,
@@ -245,6 +248,10 @@ export default function EVInsuranceCalculator() {
       region: capturedCalc.region,
       power_output: capturedCalc.powerOutput,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      device_type: deviceType,
+      cta_source: ctaSource,
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {
