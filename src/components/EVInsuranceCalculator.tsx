@@ -751,7 +751,7 @@ export default function EVInsuranceCalculator() {
                 {/* Disclaimer */}
                 <div className="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl">
                   <p className="text-xs text-amber-700">
-                    <strong>Nota:</strong> Anggaran sahaja. Harga sebenar mungkin berbeza mengikut syarikat insurans.
+                    <strong>Note:</strong> Estimate only. Actual prices may vary by insurer.
                   </p>
                 </div>
 
@@ -760,37 +760,37 @@ export default function EVInsuranceCalculator() {
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-2xl">🎯</span>
                     <h3 className="text-lg font-bold text-blue-800">
-                      Dapatkan Sebut Harga {formatCurrency(calculation.totalPremium + calculation.roadTax)} Sekarang
+                      Get Your {formatCurrency(calculation.totalPremium + calculation.roadTax)} Quote Now
                     </h3>
                   </div>
                   <ul className="space-y-2 mb-4">
                     <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Bandingkan harga dari Allianz, MSIG, Zurich, Etiqa
+                      Compare prices from Allianz, MSIG, Zurich, Etiqa
                     </li>
                     <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Jimat sehingga 30% vs harga pasaran
+                      Save up to 30% vs market price
                     </li>
                     <li className="flex items-center gap-2 text-sm text-slate-700">
                       <span className="text-green-500 font-bold">✓</span>
-                      Sebut harga dalam 24 jam - percuma
+                      Get quote within 24 hours - free
                     </li>
                   </ul>
                   {/* Urgency */}
                   <p className="text-xs text-amber-600 font-medium mb-4">
-                    ⏰ Harga insurans EV naik setiap tahun - kunci harga anda sekarang
+                    ⏰ EV insurance rates increase yearly - lock in your price today
                   </p>
                   <button
                     onClick={() => openModal("results_card")}
                     className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    Dapatkan Sebut Harga Percuma
+                    Get Free Quote
                     <span>→</span>
                   </button>
                   {/* Social Proof */}
                   <p className="text-xs text-blue-600 text-center mt-3">
-                    ✓ 200+ pemilik EV telah dapatkan sebut harga bulan ini
+                    ✓ 200+ EV owners got quotes this month
                   </p>
                 </div>
               </div>
@@ -915,13 +915,13 @@ export default function EVInsuranceCalculator() {
           </button>
           <div className="flex items-center justify-between py-3 px-4">
             <span className="text-white font-semibold text-sm">
-              Insurans EV: {formatCurrency(calculation.totalPremium + calculation.roadTax)}
+              EV Insurance: {formatCurrency(calculation.totalPremium + calculation.roadTax)}
             </span>
             <button
               onClick={() => openModal("sticky_bar")}
               className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-50 transition-colors flex items-center gap-1"
             >
-              Sebut Harga
+              Get Free Quote
               <span>→</span>
             </button>
           </div>
