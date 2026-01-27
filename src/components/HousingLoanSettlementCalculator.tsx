@@ -142,7 +142,7 @@ export default function HousingLoanSettlementCalculator() {
     }, 5000);
   };
 
-  const openModal = (source: "sticky_bar" | "results_card" = "results_card") => {
+  const openModal = (source: "sticky_bar" | "results_card" | "floating_cta" = "results_card") => {
     setCtaSource(source);
     // Capture calculator values BEFORE opening modal
     setCapturedCalc({
