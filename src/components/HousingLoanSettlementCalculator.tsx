@@ -31,7 +31,8 @@ export default function HousingLoanSettlementCalculator() {
   const [exitPopupShown, setExitPopupShown] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [showStickyCTA, setShowStickyCTA] = useState(true);
-  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card">("results_card");
+  const [ctaSource, setCtaSource] = useState<"sticky_bar" | "results_card" | "floating_cta">("results_card");
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     whatsapp: "+60",
@@ -184,6 +185,20 @@ export default function HousingLoanSettlementCalculator() {
     };
   }, [exitPopupShown, showModal, calculation.netSavings]);
 
+  // Scroll detection for back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleExitFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -214,7 +229,7 @@ export default function HousingLoanSettlementCalculator() {
 
       if (response.ok) {
         setShowExitPopup(false);
-        showToast("success", "Terima kasih! Kami akan hubungi anda dalam 24 jam");
+        showToast("success", "Thanks! We'll contact you within 24 hours");
       } else {
         showToast("error", "Something went wrong. Please try again.");
       }
@@ -745,71 +760,71 @@ export default function HousingLoanSettlementCalculator() {
                     // High savings (>RM50,000)
                     <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-r-xl p-4">
                       <p className="font-bold text-green-800 text-lg">
-                        🎉 Anda boleh jimat {formatCurrency(calculation.netSavings)}!
+                        🎉 You could save {formatCurrency(calculation.netSavings)}!
                       </p>
                       <p className="text-sm text-green-700 mt-1">
-                        Bercakap dengan pakar refinancing. Tiada komitmen.
+                        Talk to a refinancing expert. No commitment.
                       </p>
                       <button
                         onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
-                        Kunci Savings Anda
+                        Lock In Your Savings
                         <span>→</span>
                       </button>
                       {/* Social Proof */}
                       <p className="text-xs text-green-600 text-center mt-3">
-                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                        ✓ 127 homeowners checked refinancing eligibility this month
                       </p>
                       {/* Urgency */}
                       <p className="text-xs text-amber-600 text-center mt-1 font-medium">
-                        ⏰ Kadar OPR dijangka naik - kunci savings anda sekarang
+                        ⏰ OPR rates expected to rise - lock in your savings now
                       </p>
                     </div>
                   ) : calculation.netSavings >= 10000 ? (
                     // Medium savings (RM10,000 - RM50,000)
                     <div className="mt-4 bg-green-50 border-l-4 border-green-500 rounded-r-xl p-4">
                       <p className="font-bold text-green-800 text-lg">
-                        Jimat {formatCurrency(calculation.netSavings)} - Nak Tahu Caranya?
+                        Save {formatCurrency(calculation.netSavings)} - Want to Know How?
                       </p>
                       <p className="text-sm text-green-700 mt-1">
-                        Bercakap dengan pakar refinancing. Tiada komitmen.
+                        Talk to a refinancing expert. No commitment.
                       </p>
                       <button
                         onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-green-600 hover:bg-green-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
-                        Dapatkan Analisis Percuma
+                        Get Free Analysis
                         <span>→</span>
                       </button>
                       {/* Social Proof */}
                       <p className="text-xs text-green-600 text-center mt-3">
-                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                        ✓ 127 homeowners checked refinancing eligibility this month
                       </p>
                       {/* Urgency */}
                       <p className="text-xs text-amber-600 text-center mt-1 font-medium">
-                        ⏰ Kadar OPR dijangka naik - kunci savings anda sekarang
+                        ⏰ OPR rates expected to rise - lock in your savings now
                       </p>
                     </div>
                   ) : (
                     // Low/negative savings (<RM10,000)
                     <div className="mt-4 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl p-4">
                       <p className="font-bold text-slate-800 text-lg">
-                        Settlement mungkin tak berbaloi
+                        Settlement may not be worth it
                       </p>
                       <p className="text-sm text-slate-600 mt-1">
-                        Tapi mungkin ada pilihan lain
+                        But there may be other options
                       </p>
                       <button
                         onClick={() => openModal("results_card")}
                         className="w-full py-3 mt-3 bg-slate-600 hover:bg-slate-700 rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
                       >
-                        Dapatkan Second Opinion
+                        Get a Second Opinion
                         <span>→</span>
                       </button>
                       {/* Social Proof */}
                       <p className="text-xs text-slate-500 text-center mt-3">
-                        ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                        ✓ 127 homeowners checked refinancing eligibility this month
                       </p>
                     </div>
                   )}
@@ -996,7 +1011,7 @@ export default function HousingLoanSettlementCalculator() {
                   <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Nama
+                        Full Name
                       </label>
                       <input
                         type="text"
@@ -1005,14 +1020,14 @@ export default function HousingLoanSettlementCalculator() {
                         onChange={(e) =>
                           setFormData({ ...formData, fullName: e.target.value })
                         }
-                        placeholder="Nama penuh anda"
+                        placeholder="Enter your full name"
                         className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        No. WhatsApp
+                        WhatsApp Number
                       </label>
                       <input
                         type="tel"
@@ -1031,17 +1046,17 @@ export default function HousingLoanSettlementCalculator() {
                       disabled={isSubmitting}
                       className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
                     >
-                      {isSubmitting ? "Menghantar..." : "Dapatkan Konsultasi Percuma"}
+                      {isSubmitting ? "Submitting..." : "Get Free Consultation"}
                     </button>
                   </form>
 
                   {/* Social Proof */}
                   <p className="text-xs text-green-600 text-center mt-3">
-                    ✓ 127 pemilik rumah telah semak kelayakan refinancing bulan ini
+                    ✓ 127 homeowners checked refinancing eligibility this month
                   </p>
 
                   <p className="text-xs text-slate-400 text-center mt-2">
-                    Dengan menghantar, anda bersetuju untuk dihubungi oleh pakar pinjaman kami.
+                    By submitting, you agree to be contacted by our loan specialists.
                   </p>
                 </div>
               </>
@@ -1108,13 +1123,13 @@ export default function HousingLoanSettlementCalculator() {
           </button>
           <div className="flex items-center justify-between py-3 px-4">
             <span className="text-white font-semibold">
-              Jimat {formatCurrency(calculation.netSavings)}
+              Save {formatCurrency(calculation.netSavings)}
             </span>
             <button
               onClick={() => openModal("sticky_bar")}
               className="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-50 transition-colors flex items-center gap-1"
             >
-              Hubungi Pakar
+              Get Quote
               <span>→</span>
             </button>
           </div>
@@ -1138,10 +1153,10 @@ export default function HousingLoanSettlementCalculator() {
               <div className="text-center mb-6">
                 <span className="text-5xl mb-4 block">💰</span>
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                  Jangan lepaskan peluang jimat {formatCurrency(calculation.netSavings)}
+                  Don&apos;t miss out on saving {formatCurrency(calculation.netSavings)}
                 </h3>
                 <p className="text-slate-600">
-                  Tinggalkan nombor WhatsApp, kami hubungi dalam 24 jam
+                  Leave your WhatsApp number, we&apos;ll contact you within 24 hours
                 </p>
               </div>
 
@@ -1152,7 +1167,7 @@ export default function HousingLoanSettlementCalculator() {
                     required
                     value={exitFormData.whatsapp}
                     onChange={(e) => setExitFormData({ whatsapp: e.target.value })}
-                    placeholder="No. WhatsApp (+60123456789)"
+                    placeholder="WhatsApp Number (+60123456789)"
                     className="w-full px-4 py-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -1161,7 +1176,7 @@ export default function HousingLoanSettlementCalculator() {
                   disabled={isSubmitting}
                   className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-bold text-lg transition-colors"
                 >
-                  {isSubmitting ? "Menghantar..." : "Hantar"}
+                  {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
               </form>
 
@@ -1169,10 +1184,42 @@ export default function HousingLoanSettlementCalculator() {
                 onClick={() => setShowExitPopup(false)}
                 className="w-full py-2 mt-3 text-slate-500 hover:text-slate-700 text-sm transition-colors"
               >
-                Tidak, terima kasih
+                No, thanks
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Floating CTA Stack (Bottom Right) */}
+      {hasInteracted && (
+        <div className="fixed bottom-20 md:bottom-[100px] right-4 md:right-[30px] z-50 flex flex-col items-end gap-2">
+          {/* Back to Top Button */}
+          {showBackToTop && (
+            <button
+              onClick={scrollToTop}
+              className="w-10 h-10 bg-white border border-slate-200 rounded-full shadow-md hover:shadow-lg hover:bg-slate-50 transition-all flex items-center justify-center"
+              aria-label="Back to top"
+            >
+              <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Social Proof */}
+          <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-600">
+            127 homeowners checked this month
+          </div>
+
+          {/* Apply Now Floating Button */}
+          <button
+            onClick={() => openModal("floating_cta")}
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+          >
+            Apply Now
+            <span>→</span>
+          </button>
         </div>
       )}
     </div>
