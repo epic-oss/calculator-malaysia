@@ -61,8 +61,10 @@ export default function CarInsuranceCalculator() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
+    icNumber: "",
     phone: "+60",
+    email: "",
+    postcode: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ show: boolean; type: "success" | "error"; message: string }>({
@@ -174,15 +176,17 @@ export default function CarInsuranceCalculator() {
     const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
-      name: formData.fullName,
-      whatsapp: formData.phone,
-      email: formData.email,
+      full_name: formData.fullName,
+      ic_number: formData.icNumber,
+      whatsapp_number: formData.phone,
+      email: formData.email || "",
+      postcode: formData.postcode,
       calculator_type: "car_insurance",
-      vehicle_value: capturedCalc.vehicleValue,
+      sum_insured: capturedCalc.vehicleValue,
       vehicle_type: capturedCalc.vehicleType,
       engine_cc: capturedCalc.engineCC,
-      ncd_percent: capturedCalc.ncdPercent,
-      annual_premium: capturedCalc.annualPremium,
+      ncd_percentage: capturedCalc.ncdPercent,
+      estimated_premium: capturedCalc.annualPremium,
       road_tax: capturedCalc.roadTax,
       coverage_type: capturedCalc.coverageType,
       source_url: typeof window !== "undefined" ? window.location.href : "",
@@ -218,7 +222,7 @@ export default function CarInsuranceCalculator() {
 
   const closeModal = () => {
     setShowModal(false);
-    setFormData({ fullName: "", email: "", phone: "+60" });
+    setFormData({ fullName: "", icNumber: "", phone: "+60", email: "", postcode: "" });
     setCapturedCalc(null);
   };
 
@@ -646,21 +650,21 @@ export default function CarInsuranceCalculator() {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="Enter your full name"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Email *
+                    IC Number *
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="your@email.com"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    value={formData.icNumber}
+                    onChange={(e) => setFormData({ ...formData, icNumber: e.target.value })}
+                    placeholder="e.g. 901234-14-5678"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -674,16 +678,45 @@ export default function CarInsuranceCalculator() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+60123456789"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="your@email.com (optional)"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Postcode *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.postcode}
+                    onChange={(e) => setFormData({ ...formData, postcode: e.target.value })}
+                    placeholder="e.g. 47500"
+                    pattern="[0-9]{5}"
+                    maxLength={5}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-all mt-2"
                 >
-                  {isSubmitting ? "Submitting..." : "Get My Quote"}
+                  {isSubmitting ? "Submitting..." : "Get My Quote →"}
                 </button>
               </form>
 

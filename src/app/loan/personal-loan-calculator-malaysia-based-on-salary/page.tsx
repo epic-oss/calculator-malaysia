@@ -2,18 +2,23 @@ import PersonalLoanCalculator from "@/components/PersonalLoanCalculator";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "Personal Loan Calculator Malaysia 2026 | Calculator Malaysia",
+export const metadata: Metadata = {
+  title: "Personal Loan Calculator Malaysia 2026 | Based on Salary & DSR",
   description:
-    "Calculate your personal loan monthly payment and check eligibility instantly. See DSR, compare bank rates, and get approved faster.",
+    "Free personal loan calculator Malaysia 2026. Calculate monthly payment based on salary, check DSR eligibility instantly. Compare rates from Maybank, CIMB, Public Bank & more.",
   keywords: [
     "personal loan calculator malaysia",
     "pinjaman peribadi calculator",
     "loan eligibility calculator",
     "DSR calculator",
     "bank loan calculator",
+    "personal loan based on salary",
   ],
+  alternates: {
+    canonical: "https://calculatormalaysia.com/loan/personal-loan-calculator-malaysia-based-on-salary/",
+  },
 };
 
 export default function PersonalLoanCalculatorPage() {
@@ -23,7 +28,7 @@ export default function PersonalLoanCalculatorPage() {
 
       {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
@@ -38,10 +43,17 @@ export default function PersonalLoanCalculatorPage() {
             </svg>
             Back to All Calculators
           </Link>
+          <Link
+            href="/loan/kalkulator-pinjaman-peribadi-malaysia/"
+            className="inline-flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+          >
+            <span>🇲🇾</span>
+            Baca dalam Bahasa Melayu
+          </Link>
         </div>
       </div>
 
-      <PersonalLoanCalculator />
+      <PersonalLoanCalculator locale="en" />
 
       {/* SEO Content Section */}
       <section className="bg-white border-t border-slate-100">

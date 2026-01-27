@@ -203,21 +203,23 @@ export default function HousingLoanSettlementCalculator() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
-      name: "Exit Intent Lead",
-      whatsapp: exitFormData.whatsapp,
+      full_name: "Exit Intent Lead",
+      whatsapp_number: exitFormData.whatsapp,
       calculator_type: "early_settlement_calculator",
-      source: "exit_intent_popup",
-      loan_amount: loanAmount,
-      outstanding: Math.round(calculation.outstandingBalance),
+      outstanding_amount: Math.round(calculation.outstandingBalance),
       settlement_amount: Math.round(calculation.settlementAmount),
-      savings_amount: Math.round(calculation.netSavings),
+      monthly_savings: Math.round(calculation.netSavings),
       interest_rate: interestRate,
       years_remaining: Math.round(calculation.remainingMonths / 12),
       monthly_payment: Math.round(calculation.monthlyPayment),
-      years_paid: yearsPaid,
       source_url: typeof window !== "undefined" ? window.location.href : "",
+      device_type: deviceType,
+      cta_source: "exit_intent",
+      referrer: typeof document !== "undefined" ? document.referrer : "",
+      landing_page: typeof window !== "undefined" ? window.location.href : "",
     };
 
     try {
@@ -254,18 +256,15 @@ export default function HousingLoanSettlementCalculator() {
     const deviceType = typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "desktop";
     const leadData = {
       timestamp: new Date().toISOString(),
-      name: formData.fullName,
-      whatsapp: formData.whatsapp,
+      full_name: formData.fullName,
+      whatsapp_number: formData.whatsapp,
       calculator_type: "early_settlement_calculator",
-      source: "main_form",
-      loan_amount: capturedCalc.loanAmount,
-      outstanding_balance: capturedCalc.outstanding,
+      outstanding_amount: capturedCalc.outstanding,
       settlement_amount: capturedCalc.settlementAmount,
-      total_savings: capturedCalc.potentialSavings,
+      monthly_savings: capturedCalc.potentialSavings,
       interest_rate: capturedCalc.interestRate,
       years_remaining: capturedCalc.yearsRemaining,
       monthly_payment: capturedCalc.monthlyPayment,
-      years_paid: capturedCalc.yearsPaid,
       source_url: typeof window !== "undefined" ? window.location.href : "",
       device_type: deviceType,
       cta_source: ctaSource,

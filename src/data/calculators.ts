@@ -180,6 +180,33 @@ export const calculators: Calculator[] = [
     slug: "/loans/kalkulator-refinance-pinjaman-peribadi/",
     colSpan: 6,
   },
+  {
+    id: "kalkulator-pinjaman-peribadi",
+    name: "Kalkulator Pinjaman Peribadi Malaysia",
+    description: "Kira bayaran bulanan dan semak kelayakan DSR untuk pinjaman peribadi.",
+    category: "loan",
+    icon: "💵",
+    slug: "/loan/kalkulator-pinjaman-peribadi-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "dsr-calculator",
+    name: "DSR Calculator Malaysia",
+    description: "Calculate your Debt Service Ratio and check loan eligibility instantly.",
+    category: "loan",
+    icon: "📊",
+    slug: "/loan/dsr-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "maybank-vs-cimb",
+    name: "Maybank vs CIMB Personal Loan",
+    description: "Compare Maybank and CIMB personal loan rates, fees, and eligibility.",
+    category: "loan",
+    icon: "🏦",
+    slug: "/loan/maybank-vs-cimb-personal-loan-comparison/",
+    colSpan: 6,
+  },
 
   // PROPERTY CALCULATORS
   {
