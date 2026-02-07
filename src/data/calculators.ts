@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat" | "renovation";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat" | "renovation" | "services";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -22,6 +22,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   auto: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
   zakat: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
   renovation: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200" },
+  services: { bg: "bg-cyan-50", text: "text-cyan-600", border: "border-cyan-200" },
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -36,6 +37,7 @@ export const categoryLabels: Record<string, string> = {
   auto: "Auto",
   zakat: "Zakat",
   renovation: "Renovation",
+  services: "Services",
 };
 
 export const calculators: Calculator[] = [
@@ -394,6 +396,17 @@ export const calculators: Calculator[] = [
     slug: "/renovation/kalkulator-kos-renovate-dapur/",
     colSpan: 6,
   },
+
+  // SERVICES CALCULATORS
+  {
+    id: "office-cleaning",
+    name: "Office Cleaning Cost Calculator",
+    description: "Calculate office cleaning cost based on size, cleaning type, and frequency. Get free quotes from licensed cleaners.",
+    category: "services",
+    icon: "🧹",
+    slug: "/services/office-cleaning-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
@@ -407,4 +420,5 @@ export const categories = [
   { id: "zakat", label: "Zakat", color: "teal" },
   { id: "auto", label: "Auto", color: "amber" },
   { id: "cgpa", label: "CGPA", color: "indigo" },
+  { id: "services", label: "Services", color: "cyan" },
 ];
