@@ -1192,7 +1192,7 @@ export default function HousingLoanSettlementCalculator() {
 
       {/* Floating CTA Stack (Bottom Right) */}
       {hasInteracted && (
-        <div className="fixed bottom-20 md:bottom-[100px] right-4 md:right-[30px] z-50 flex flex-col items-end gap-2">
+        <div className="fixed bottom-20 md:bottom-[100px] right-4 md:right-[30px] z-50 flex flex-col items-end gap-3">
           {/* Back to Top Button */}
           {showBackToTop && (
             <button
@@ -1207,8 +1207,8 @@ export default function HousingLoanSettlementCalculator() {
           )}
 
           {/* Social Proof */}
-          <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-600">
-            127 homeowners checked this month
+          <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-500">
+            RM2.3M in potential savings calculated this month
           </div>
 
           {/* Apply Now Floating Button */}
