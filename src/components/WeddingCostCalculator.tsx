@@ -340,6 +340,9 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
               </div>
             </div>
 
+            {/* Social Proof */}
+            <p className="text-center text-xs text-slate-400 py-2">✓ {config.socialProof}</p>
+
             {/* CTA */}
             <div className="bg-white rounded-xl p-6 border border-pink-200 text-center">
               <h4 className="text-lg font-bold text-slate-900 mb-1">{config.cta.heading}</h4>
