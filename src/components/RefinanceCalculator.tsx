@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 interface CapturedCalculation {
   outstandingLoan: number;
@@ -102,6 +102,21 @@ export default function RefinanceCalculator() {
     name: "",
     whatsapp: "",
   });
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+      setShowFloatingCTA(window.scrollY > 500);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Handle bank selection
   const handleBankChange = (bankName: string) => {
@@ -1228,6 +1243,23 @@ export default function RefinanceCalculator() {
           </div>
         </div>
       )}
+
+      {/* Floating Desktop CTA Stack */}
+      <div className="hidden md:flex fixed bottom-6 right-6 z-50 flex-col items-end gap-3">
+        {showBackToTop && (
+          <button onClick={scrollToTop} className="w-10 h-10 bg-white border border-slate-200 rounded-full shadow-md hover:bg-slate-50 transition-all flex items-center justify-center" aria-label="Back to top">
+            <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+          </button>
+        )}
+        {showFloatingCTA && (
+          <>
+            <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-500">{"\u2713"} RM48M in loans processed · 300+ approvals</div>
+            <button onClick={scrollToTop} className="px-6 py-3 bg-green-700 hover:bg-green-800 text-white font-bold rounded-full shadow-lg transition-all">
+              Check Eligibility →
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
