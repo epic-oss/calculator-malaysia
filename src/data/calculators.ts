@@ -2,7 +2,7 @@ export interface Calculator {
   id: string;
   name: string;
   description: string;
-  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat" | "renovation" | "services";
+  category: "insurance" | "loan" | "property" | "credit-card" | "tax" | "salary" | "investment" | "cgpa" | "auto" | "zakat" | "renovation" | "services" | "wedding";
   icon: string;
   slug: string;
   featured?: boolean;
@@ -23,6 +23,7 @@ export const categoryColors: Record<string, { bg: string; text: string; border: 
   zakat: { bg: "bg-teal-50", text: "text-teal-600", border: "border-teal-200" },
   renovation: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200" },
   services: { bg: "bg-cyan-50", text: "text-cyan-600", border: "border-cyan-200" },
+  wedding: { bg: "bg-pink-50", text: "text-pink-600", border: "border-pink-200" },
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -38,6 +39,7 @@ export const categoryLabels: Record<string, string> = {
   zakat: "Zakat",
   renovation: "Renovation",
   services: "Services",
+  wedding: "Wedding",
 };
 
 export const calculators: Calculator[] = [
@@ -407,6 +409,44 @@ export const calculators: Calculator[] = [
     slug: "/services/office-cleaning-cost-calculator-malaysia/",
     colSpan: 6,
   },
+
+  // WEDDING CALCULATORS
+  {
+    id: "chinese-wedding",
+    name: "Chinese Wedding Cost Calculator",
+    description: "Estimate your Chinese wedding budget and calculate angpao break-even. Compare banquet venues & bridal packages.",
+    category: "wedding",
+    icon: "🏮",
+    slug: "/wedding/chinese-wedding-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "indian-wedding",
+    name: "Indian Wedding Cost Calculator",
+    description: "Plan your Indian wedding budget - temple or hall ceremony. Compare catering, decor & photography packages.",
+    category: "wedding",
+    icon: "🕉️",
+    slug: "/wedding/indian-wedding-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "malay-wedding",
+    name: "Kalkulator Kos Kahwin (Malay Wedding)",
+    description: "Rancang bajet perkahwinan anda. Kira kos dewan, katering, pelamin, hantaran dan fotografi.",
+    category: "wedding",
+    icon: "🪷",
+    slug: "/wedding/malay-wedding-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
+  {
+    id: "christian-wedding",
+    name: "Christian Wedding Cost Calculator",
+    description: "Plan your church or garden wedding budget. Compare venues, flowers, reception & photography packages.",
+    category: "wedding",
+    icon: "⛪",
+    slug: "/wedding/christian-wedding-cost-calculator-malaysia/",
+    colSpan: 6,
+  },
 ];
 
 export const categories = [
@@ -421,4 +461,5 @@ export const categories = [
   { id: "auto", label: "Auto", color: "amber" },
   { id: "cgpa", label: "CGPA", color: "indigo" },
   { id: "services", label: "Services", color: "cyan" },
+  { id: "wedding", label: "Wedding", color: "pink" },
 ];
