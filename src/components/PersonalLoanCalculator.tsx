@@ -37,7 +37,7 @@ const TENURE_OPTIONS_MS = [
 
 const translations = {
   en: {
-    title: "Personal Loan Calculator Malaysia 2026 | Based on Salary & DSR",
+    title: `Personal Loan Calculator Malaysia ${new Date().getFullYear()} | Based on Salary & DSR`,
     subtitle: "Calculate your monthly payment and check eligibility instantly",
     loanAmount: "Loan Amount (RM)",
     interestRate: "Interest Rate (% per annum)",
@@ -76,7 +76,7 @@ const translations = {
     enterEmail: "your@email.com",
   },
   ms: {
-    title: "Kalkulator Pinjaman Peribadi Malaysia 2026 | Berdasarkan Gaji & DSR",
+    title: `Kalkulator Pinjaman Peribadi Malaysia ${new Date().getFullYear()} | Berdasarkan Gaji & DSR`,
     subtitle: "Kira bayaran bulanan dan semak kelayakan anda dengan segera",
     loanAmount: "Jumlah Pinjaman (RM)",
     interestRate: "Kadar Faedah (% setahun)",

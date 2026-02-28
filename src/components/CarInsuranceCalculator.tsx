@@ -50,6 +50,7 @@ const SST_RATE = 0.08;
 const STAMP_DUTY = 10;
 
 export default function CarInsuranceCalculator() {
+  const currentYear = new Date().getFullYear();
   const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0]);
   const [marketValue, setMarketValue] = useState(80000);
   const [vehicleAge, setVehicleAge] = useState(0);
@@ -234,7 +235,7 @@ export default function CarInsuranceCalculator() {
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">🛡️ Insurance Calculator</div>
           <div className="text-5xl md:text-6xl mb-4">🚗</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Car Insurance Calculator</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Car Insurance Calculator Malaysia {currentYear}</h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate your car insurance premium and road tax in Malaysia</p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />

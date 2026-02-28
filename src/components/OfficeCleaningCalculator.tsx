@@ -54,6 +54,7 @@ interface CapturedCalculation {
 }
 
 export default function OfficeCleaningCalculator() {
+  const currentYear = new Date().getFullYear();
   const [officeSize, setOfficeSize] = useState(OFFICE_SIZES[0].value);
   const [cleaningType, setCleaningType] = useState(CLEANING_TYPES[0].value);
   const [frequency, setFrequency] = useState(FREQUENCIES[0].value);
@@ -230,7 +231,7 @@ export default function OfficeCleaningCalculator() {
             🧹 Free Calculator
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-3">
-            Office Cleaning Cost Calculator Malaysia
+            Office Cleaning Cost Calculator Malaysia {currentYear}
           </h1>
           <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto">
             Estimate your office cleaning cost based on size, cleaning type, and frequency

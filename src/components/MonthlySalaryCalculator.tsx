@@ -95,6 +95,7 @@ const calculatePCB = (annualTaxableIncome: number): number => {
 };
 
 export default function MonthlySalaryCalculator({ lang = "en" }: MonthlySalaryCalculatorProps) {
+  const currentYear = new Date().getFullYear();
   const [grossSalary, setGrossSalary] = useState(5000);
   const [epfRate, setEpfRate] = useState(0.11);
   const [socsoCategory, setSocsoCategory] = useState(1);
@@ -163,7 +164,7 @@ export default function MonthlySalaryCalculator({ lang = "en" }: MonthlySalaryCa
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">📋 Tax & Income</div>
           <div className="text-5xl md:text-6xl mb-4">💼</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Monthly Salary Calculator</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Monthly Salary Calculator Malaysia {currentYear}</h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate your take-home pay after EPF, SOCSO, EIS & PCB deductions</p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />

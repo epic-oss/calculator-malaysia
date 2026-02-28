@@ -55,7 +55,7 @@ const LOCATIONS_BM = [
 // Labels by locale
 const LABELS = {
   en: {
-    title: "Kitchen Renovation Cost Calculator",
+    title: `Kitchen Renovation Cost Calculator Malaysia ${new Date().getFullYear()}`,
     subtitle: "Estimate your kitchen renovation cost based on size, cabinet type, and finish level",
     kitchenSize: "Kitchen Size (sq ft)",
     cabinetType: "Cabinet Type",
@@ -108,7 +108,7 @@ const LABELS = {
     financingUrl: "/loan/personal-loan-calculator-malaysia-based-on-salary",
   },
   bm: {
-    title: "Kalkulator Kos Renovate Dapur",
+    title: `Kalkulator Kos Renovate Dapur Malaysia ${new Date().getFullYear()}`,
     subtitle: "Anggar kos renovasi dapur anda berdasarkan saiz, jenis kabinet, dan tahap kemasan",
     kitchenSize: "Saiz Dapur (kaki persegi)",
     cabinetType: "Jenis Kabinet",
@@ -172,6 +172,7 @@ interface KitchenRenovationCalculatorProps {
 }
 
 export default function KitchenRenovationCalculator({ locale }: KitchenRenovationCalculatorProps) {
+  const currentYear = new Date().getFullYear();
   const labels = LABELS[locale];
 
   // Calculator inputs
@@ -336,7 +337,7 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <span>🏠</span>
-            <span>{locale === "bm" ? "Kalkulator Renovasi 2026" : "Renovation Calculator 2026"}</span>
+            <span>{locale === "bm" ? `Kalkulator Renovasi ${currentYear}` : `Renovation Calculator ${currentYear}`}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             {labels.title}

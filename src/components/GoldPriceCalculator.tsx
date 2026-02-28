@@ -64,6 +64,7 @@ function formatNumber(num: number, decimals: number = 2): string {
 }
 
 export default function GoldPriceCalculator() {
+  const currentYear = new Date().getFullYear();
   // Live price state
   const [goldPrices, setGoldPrices] = useState<GoldPrices>(FALLBACK_PRICES);
   const [loading, setLoading] = useState<boolean>(true);
@@ -230,7 +231,7 @@ export default function GoldPriceCalculator() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <span>🥇</span>
-            <span>Kalkulator Emas Malaysia 2026</span>
+            <span>Kalkulator Emas Malaysia {currentYear}</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Kalkulator Harga Emas Malaysia

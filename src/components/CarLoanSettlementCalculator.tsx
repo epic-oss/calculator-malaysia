@@ -16,6 +16,7 @@ interface CapturedCalculation {
 }
 
 export default function CarLoanSettlementCalculator() {
+  const currentYear = new Date().getFullYear();
   const [carPrice, setCarPrice] = useState(80000);
   const [interestRate, setInterestRate] = useState(3);
   const [loanTenure, setLoanTenure] = useState(7);
@@ -207,7 +208,7 @@ export default function CarLoanSettlementCalculator() {
           <div className="flex items-center gap-3 mb-4">
             <span className="text-4xl">🚗</span>
             <h1 className="text-3xl md:text-4xl font-bold">
-              Car Loan Early Settlement Calculator
+              Car Loan Early Settlement Calculator Malaysia {currentYear}
             </h1>
           </div>
           <p className="text-blue-100 text-lg max-w-2xl">

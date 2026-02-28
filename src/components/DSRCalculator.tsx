@@ -11,6 +11,7 @@ interface DebtItem {
 }
 
 export default function DSRCalculator() {
+  const currentYear = new Date().getFullYear();
   const [monthlyIncome, setMonthlyIncome] = useState(5000);
   const [debts, setDebts] = useState<DebtItem[]>([
     { id: "housing", name: "Housing Loan", amount: 0 },
@@ -198,7 +199,7 @@ export default function DSRCalculator() {
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">💰 Loan Calculator</div>
           <div className="text-5xl md:text-6xl mb-4">📊</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">DSR Calculator Malaysia 2026</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">DSR Calculator Malaysia {currentYear}</h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate your Debt Service Ratio and check loan eligibility</p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />

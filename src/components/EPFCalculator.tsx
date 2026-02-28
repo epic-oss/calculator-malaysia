@@ -17,6 +17,7 @@ const RETIREMENT_AGES = [
 ];
 
 export default function EPFCalculator() {
+  const currentYear = new Date().getFullYear();
   const [currentAge, setCurrentAge] = useState(30);
   const [retirementAge, setRetirementAge] = useState(55);
   const [currentBalance, setCurrentBalance] = useState(50000);
@@ -111,7 +112,7 @@ export default function EPFCalculator() {
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">📋 Tax & Income</div>
           <div className="text-5xl md:text-6xl mb-4">📈</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">EPF Calculator Malaysia (KWSP)</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">EPF Calculator Malaysia {currentYear} (KWSP)</h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate your EPF contributions and project your retirement savings</p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />

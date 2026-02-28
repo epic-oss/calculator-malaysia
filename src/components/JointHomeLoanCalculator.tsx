@@ -19,6 +19,7 @@ const LOAN_TENURES = [
 ];
 
 export default function JointHomeLoanCalculator() {
+  const currentYear = new Date().getFullYear();
   // Applicant 1
   const [applicant1Income, setApplicant1Income] = useState(6000);
   const [applicant1Commitments, setApplicant1Commitments] = useState(1000);
@@ -235,7 +236,7 @@ export default function JointHomeLoanCalculator() {
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">💰 Joint Loan Calculator</div>
           <div className="text-5xl md:text-6xl mb-4">👫</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Joint Home Loan Eligibility Calculator Malaysia</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">Joint Home Loan Eligibility Calculator Malaysia {currentYear}</h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate combined loan eligibility for couples and co-borrowers</p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />

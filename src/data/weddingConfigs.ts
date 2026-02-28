@@ -35,6 +35,8 @@ export interface WConfig {
   calculateGifts: (v: Record<string, number | boolean>, guestCount: number, giftItems: WItem[]) => number;
 }
 
+const currentYear = new Date().getFullYear();
+
 // ═══════════════════════════════════════════════
 // CHINESE WEDDING CONFIG
 // ═══════════════════════════════════════════════
@@ -44,9 +46,9 @@ const chineseConfig: WConfig = {
   gradientFrom: "from-red-700",
   gradientTo: "to-red-600",
   heroEmoji: "🏮",
-  heroTitle: "Chinese Wedding Cost Calculator Malaysia",
-  heroSubtitle: "Estimate your wedding budget and calculate angpao break-even",
-  heroBadge: "🧧 Free Calculator",
+  heroTitle: `Chinese Wedding Cost Calculator Malaysia ${currentYear}`,
+  heroSubtitle: `Estimate your ${currentYear} wedding cost and calculate angpao break-even`,
+  heroBadge: "🧧 Chinese Wedding",
   socialProof: "RM4.2M in weddings planned this year",
   labels: { totalCost: "Total Wedding Cost", giftTotal: "Expected Angpao Collection", netCost: "Net Cost (after angpao)", surplus: "Angpao Surplus", shortfall: "Shortfall" },
   cta: { heading: "Get Quotes from Top Wedding Vendors", subtext: "Compare banquet venues, bridal houses & photographers", button: "Get Free Quotes →", trust: "✓ 200+ couples planned with us" },
@@ -156,9 +158,9 @@ const indianConfig: WConfig = {
   gradientVia: "via-red-800",
   gradientTo: "to-orange-700",
   heroEmoji: "🛕",
-  heroTitle: "Indian Wedding Cost Calculator Malaysia",
-  heroSubtitle: "Plan your dream wedding budget — from mehendi to reception",
-  heroBadge: "🪔 Free Calculator",
+  heroTitle: `Indian Wedding Cost Calculator Malaysia ${currentYear}`,
+  heroSubtitle: `Plan your dream ${currentYear} wedding budget - from mehendi to reception`,
+  heroBadge: "🪔 Indian Wedding",
   socialProof: "RM3.8M in weddings planned this year",
   labels: { totalCost: "Total Wedding Cost", giftTotal: "Expected Gift Collection", netCost: "Net Cost (after gifts)", surplus: "Gift Surplus", shortfall: "Shortfall" },
   cta: { heading: "Get Quotes from Indian Wedding Specialists", subtext: "Compare venues, caterers, decorators & photographers", button: "Get Free Quotes →", trust: "✓ 150+ couples planned with us" },
@@ -292,9 +294,9 @@ const malayConfig: WConfig = {
   gradientFrom: "from-violet-700",
   gradientTo: "to-purple-600",
   heroEmoji: "🪷",
-  heroTitle: "Kalkulator Kos Kahwin Malaysia",
-  heroSubtitle: "Rancang bajet perkahwinan anda dengan tepat",
-  heroBadge: "💒 Kalkulator Percuma",
+  heroTitle: `Kalkulator Kos Kahwin Malaysia ${currentYear}`,
+  heroSubtitle: `Rancang bajet perkahwinan ${currentYear} anda dengan tepat`,
+  heroBadge: "🪷 Perkahwinan Melayu",
   socialProof: "RM6.5M kos kahwin dikira tahun ini",
   labels: { totalCost: "Jumlah Kos Kahwin", giftTotal: "Jangkaan Sumbangan", netCost: "Kos Bersih", surplus: "Lebihan", shortfall: "Kekurangan" },
   cta: { heading: "Dapatkan Sebut Harga Pakej Kahwin", subtext: "Bandingkan dewan, katering, pelamin & fotografi", button: "Minta Sebut Harga →", trust: "✓ 500+ pasangan telah merancang bersama kami" },
@@ -430,9 +432,9 @@ const christianConfig: WConfig = {
   gradientFrom: "from-blue-700",
   gradientTo: "to-indigo-600",
   heroEmoji: "⛪",
-  heroTitle: "Christian Wedding Cost Calculator Malaysia",
-  heroSubtitle: "Plan your church or garden wedding budget",
-  heroBadge: "💒 Free Calculator",
+  heroTitle: `Christian Wedding Cost Calculator Malaysia ${currentYear}`,
+  heroSubtitle: `Plan your ${currentYear} church or garden wedding budget`,
+  heroBadge: "⛪ Christian Wedding",
   socialProof: "RM2.1M in weddings planned this year",
   labels: { totalCost: "Total Wedding Cost", giftTotal: "Expected Gift Collection", netCost: "Net Cost (after gifts)", surplus: "Gift Surplus", shortfall: "Shortfall" },
   cta: { heading: "Find Your Perfect Wedding Vendors", subtext: "Compare venues, photographers, florists & planners", button: "Get Free Quotes →", trust: "✓ 100+ couples planned with us" },

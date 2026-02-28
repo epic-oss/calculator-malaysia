@@ -19,6 +19,7 @@ interface CapturedCalculation {
 }
 
 export default function HousingLoanSettlementCalculator() {
+  const currentYear = new Date().getFullYear();
   const [loanAmount, setLoanAmount] = useState(500000);
   const [interestRate, setInterestRate] = useState(4);
   const [originalTenure, setOriginalTenure] = useState(30);
@@ -315,7 +316,7 @@ export default function HousingLoanSettlementCalculator() {
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Early Housing Loan Settlement Calculator
+            Early Housing Loan Settlement Calculator Malaysia {currentYear}
           </h1>
           <p className="text-green-100 text-lg max-w-2xl">
             Find out if settling your housing loan early makes financial sense.
