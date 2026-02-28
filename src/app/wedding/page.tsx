@@ -34,7 +34,7 @@ const weddingTypes = [
     costRange: "RM 50,000 – RM 150,000",
     accent: "red",
     gradient: "from-red-700 to-red-500",
-    buttonBg: "bg-red-700 hover:bg-red-800",
+    buttonColor: "#C62828",
     cardBorder: "border-red-200",
     cardBg: "bg-red-50",
     iconBg: "bg-red-100",
@@ -47,7 +47,7 @@ const weddingTypes = [
     costRange: "RM 40,000 – RM 200,000",
     accent: "orange",
     gradient: "from-red-800 to-orange-600",
-    buttonBg: "bg-red-800 hover:bg-red-900",
+    buttonColor: "#C2185B",
     cardBorder: "border-orange-200",
     cardBg: "bg-orange-50",
     iconBg: "bg-orange-100",
@@ -60,7 +60,7 @@ const weddingTypes = [
     costRange: "RM 30,000 – RM 120,000",
     accent: "purple",
     gradient: "from-violet-700 to-purple-500",
-    buttonBg: "bg-violet-700 hover:bg-violet-800",
+    buttonColor: "#2E7D32",
     cardBorder: "border-purple-200",
     cardBg: "bg-purple-50",
     iconBg: "bg-purple-100",
@@ -73,7 +73,7 @@ const weddingTypes = [
     costRange: "RM 35,000 – RM 130,000",
     accent: "blue",
     gradient: "from-blue-700 to-indigo-500",
-    buttonBg: "bg-blue-700 hover:bg-blue-800",
+    buttonColor: "#1565C0",
     cardBorder: "border-blue-200",
     cardBg: "bg-blue-50",
     iconBg: "bg-blue-100",
@@ -185,7 +185,7 @@ export default function WeddingHubPage() {
                   <div className="text-xs font-medium text-slate-500 mb-4">
                     Average budget: <span className="text-slate-800 font-semibold">{w.costRange}</span>
                   </div>
-                  <span className={`inline-flex items-center gap-1 ${w.buttonBg} text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors`}>
+                  <span className="inline-flex items-center gap-1 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-opacity group-hover:opacity-90" style={{ backgroundColor: w.buttonColor }}>
                     Calculate Now
                     <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -207,8 +207,8 @@ export default function WeddingHubPage() {
               <div className="text-sm text-slate-500">Couples Planned</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">RM 16M+</div>
-              <div className="text-sm text-slate-500">Budgets Calculated</div>
+              <div className="text-2xl font-bold text-slate-900">RM 3.8M+</div>
+              <div className="text-sm text-slate-500">Budgets Planned</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">4 Types</div>
