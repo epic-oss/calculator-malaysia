@@ -112,7 +112,9 @@ export default function MalayWeddingCostCalculatorPage() {
               Home
             </Link>
             <span>›</span>
-            <span className="text-slate-400">Wedding</span>
+            <Link href="/wedding" className="hover:text-slate-900 transition-colors">
+              Wedding
+            </Link>
             <span>›</span>
             <span className="text-slate-900">Kalkulator Kos Kahwin</span>
           </div>
