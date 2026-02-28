@@ -246,17 +246,22 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
         </div>
       )}
 
-      {/* Hero */}
-      <div className={`relative overflow-hidden bg-gradient-to-br ${config.gradientFrom} ${config.gradientVia || ""} ${config.gradientTo} text-white py-10 md:py-14`}>
+      {/* Hero - gradient classes must be full strings for Tailwind JIT scanning */}
+      <div className={
+        type === "chinese" ? "relative overflow-hidden bg-gradient-to-br from-red-700 via-red-600 to-amber-600 text-white py-10 md:py-14" :
+        type === "indian" ? "relative overflow-hidden bg-gradient-to-br from-red-800 via-red-700 to-orange-600 text-white py-10 md:py-14" :
+        type === "malay" ? "relative overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-600 text-white py-10 md:py-14" :
+        "relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-700 to-indigo-600 text-white py-10 md:py-14"
+      }>
         {/* Decorative pattern overlay */}
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium text-white mb-4">
             {config.heroBadge}
           </div>
           <div className="text-5xl md:text-6xl mb-4">{config.heroEmoji}</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">{config.heroTitle}</h1>
-          <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">{config.heroSubtitle}</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3 text-white">{config.heroTitle}</h1>
+          <p className="text-white/90 text-base md:text-lg max-w-2xl mx-auto">{config.heroSubtitle}</p>
         </div>
         {/* Decorative bottom border - gold for Indian, white for others */}
         {type === "indian" ? (
