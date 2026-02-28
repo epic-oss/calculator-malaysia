@@ -116,14 +116,9 @@ export default function GoldPriceCalculatorPage() {
       <div className="bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Link
-              href="/"
-              className="hover:text-slate-900 transition-colors"
-            >
-              Utama
-            </Link>
+            <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
             <span>›</span>
-            <span className="text-slate-400">Pelaburan</span>
+            <Link href="/investment" className="hover:text-slate-900 transition-colors">Investment</Link>
             <span>›</span>
             <span className="text-slate-900">Kalkulator Harga Emas</span>
           </div>

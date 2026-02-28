@@ -33,24 +33,25 @@ export default function CGPACalculatorPage() {
   return (
     <>
       <Navbar />
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
+            <span>›</span>
+            <span className="text-slate-400">Education</span>
+            <span>›</span>
+            <span className="text-slate-900">CGPA Calculator UIA</span>
+          </div>
+        </div>
+      </div>
+
       <CGPACalculator />
 
       {/* SEO Content Section */}
       <div className="bg-white py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="text-sm text-slate-500 mb-8">
-            <Link href="/" className="hover:text-blue-600">
-              Home
-            </Link>
-            <span className="mx-2">/</span>
-            <Link href="/#cgpa" className="hover:text-blue-600">
-              Education Calculators
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-800">CGPA Calculator</span>
-          </nav>
-
           <article className="prose prose-slate max-w-none">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">
               How CGPA is Calculated in Malaysia

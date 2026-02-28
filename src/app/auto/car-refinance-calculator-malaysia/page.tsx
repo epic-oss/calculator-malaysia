@@ -113,20 +113,13 @@ export default function CarRefinanceCalculatorPage() {
       {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 py-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Back to All Calculators
-          </Link>
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
+            <span>›</span>
+            <Link href="/auto" className="hover:text-slate-900 transition-colors">Auto</Link>
+            <span>›</span>
+            <span className="text-slate-900">Car Refinance Calculator</span>
+          </div>
         </div>
       </div>
 

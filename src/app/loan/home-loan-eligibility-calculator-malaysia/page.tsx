@@ -34,23 +34,29 @@ export default function HomeLoanEligibilityCalculatorPage() {
   return (
     <>
       <Navbar />
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
+            <Link href="/" className="hover:text-slate-900 transition-colors">
+              Home
+            </Link>
+            <span>&rsaquo;</span>
+            <Link href="/loan" className="hover:text-slate-900 transition-colors">
+              Loans
+            </Link>
+            <span>&rsaquo;</span>
+            <span className="text-slate-900">Home Loan Eligibility</span>
+          </div>
+        </div>
+      </div>
+
       <HomeLoanEligibilityCalculator />
 
       {/* SEO Content Section */}
       <div className="bg-white py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Breadcrumb */}
-          <nav className="text-sm text-slate-500 mb-8">
-            <Link href="/" className="hover:text-blue-600">
-              Home
-            </Link>
-            <span className="mx-2">/</span>
-            <Link href="/#loan" className="hover:text-blue-600">
-              Loan Calculators
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-800">Home Loan Eligibility Calculator</span>
-          </nav>
 
           <article className="prose prose-slate max-w-none">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">
