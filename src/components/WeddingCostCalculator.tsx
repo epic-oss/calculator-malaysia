@@ -350,8 +350,53 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
               <button onClick={() => openModal("results_card")} className="w-full py-4 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-pink-200">
                 {config.cta.button}
               </button>
-              <p className="text-xs text-slate-400 mt-3">{config.cta.trust}</p>
+              <p className={`text-[13px] mt-3 ${
+                type === "indian" ? "text-pink-700" :
+                type === "chinese" ? "text-red-700" :
+                type === "malay" ? "text-green-700" :
+                "text-blue-700"
+              }`} dangerouslySetInnerHTML={{ __html: config.cta.trust.replace(/(\d[\d,+.]+\S*)/g, '<strong>$1</strong>') }} />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Stats Banner */}
+      <div className="max-w-4xl mx-auto px-4 mt-8 mb-4">
+        <div className={`rounded-2xl py-4 px-6 flex items-center justify-center gap-6 md:gap-10 ${
+          type === "chinese" ? "bg-red-50" :
+          type === "indian" ? "bg-pink-50" :
+          type === "malay" ? "bg-green-50" :
+          "bg-blue-50"
+        }`} style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <div className="text-center">
+            <div className={`text-lg md:text-xl font-bold ${
+              type === "chinese" ? "text-red-700" :
+              type === "indian" ? "text-pink-700" :
+              type === "malay" ? "text-green-700" :
+              "text-blue-700"
+            }`}>150+</div>
+            <div className="text-[11px] md:text-xs text-slate-500">Couples Helped</div>
+          </div>
+          <div className="w-px h-8 bg-slate-200" />
+          <div className="text-center">
+            <div className={`text-lg md:text-xl font-bold ${
+              type === "chinese" ? "text-red-700" :
+              type === "indian" ? "text-pink-700" :
+              type === "malay" ? "text-green-700" :
+              "text-blue-700"
+            }`}>RM3.8M</div>
+            <div className="text-[11px] md:text-xs text-slate-500">Budgets Planned</div>
+          </div>
+          <div className="w-px h-8 bg-slate-200" />
+          <div className="text-center">
+            <div className={`text-lg md:text-xl font-bold ${
+              type === "chinese" ? "text-red-700" :
+              type === "indian" ? "text-pink-700" :
+              type === "malay" ? "text-green-700" :
+              "text-blue-700"
+            }`}>4.8/5</div>
+            <div className="text-[11px] md:text-xs text-slate-500">Couple Rating</div>
           </div>
         </div>
       </div>
