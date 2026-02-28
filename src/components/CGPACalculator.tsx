@@ -217,15 +217,20 @@ export default function CGPACalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-slate-800 mb-2">
-          CGPA Calculator Malaysia
-        </h1>
-        <p className="text-center text-slate-500 mb-8">
-          Calculate your cumulative grade point average for Malaysian universities
-        </p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {/* Hero Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-10 md:py-14">
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
+        <div className="relative max-w-4xl mx-auto px-4 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">🎓 Education</div>
+          <div className="text-5xl md:text-6xl mb-4">🎓</div>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-3">CGPA Calculator Malaysia</h1>
+          <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto">Calculate your cumulative grade point average for Malaysian universities</p>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20" />
+      </div>
 
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Input Form - Left Side */}
           <div className="lg:w-2/3">
