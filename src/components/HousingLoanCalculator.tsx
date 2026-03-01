@@ -659,6 +659,7 @@ export default function HousingLoanCalculator() {
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       value={leadFormData.name}
                       onChange={(e) =>
                         setLeadFormData({ ...leadFormData, name: e.target.value })
@@ -675,6 +676,7 @@ export default function HousingLoanCalculator() {
                     <input
                       type="tel"
                       required
+                      autoComplete="tel"
                       value={leadFormData.whatsapp}
                       onChange={(e) =>
                         setLeadFormData({ ...leadFormData, whatsapp: e.target.value })
@@ -689,6 +691,7 @@ export default function HousingLoanCalculator() {
                     <input
                       type="email"
                       required
+                      autoComplete="email"
                       value={leadFormData.email}
                       onChange={(e) =>
                         setLeadFormData({ ...leadFormData, email: e.target.value })

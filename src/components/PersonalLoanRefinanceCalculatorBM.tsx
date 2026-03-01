@@ -1036,6 +1036,7 @@ export default function PersonalLoanRefinanceCalculatorBM() {
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Masukkan nama anda"
@@ -1048,6 +1049,7 @@ export default function PersonalLoanRefinanceCalculatorBM() {
                     <input
                       type="email"
                       required
+                      autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="anda@email.com"
@@ -1060,6 +1062,7 @@ export default function PersonalLoanRefinanceCalculatorBM() {
                     <input
                       type="tel"
                       required
+                      autoComplete="tel"
                       value={formData.whatsapp}
                       onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                       placeholder="cth. 012-3456789"

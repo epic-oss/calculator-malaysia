@@ -183,6 +183,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -196,6 +197,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
                     <input
                       type="tel"
                       required
+                      autoComplete="tel"
                       value={formData.whatsapp}
                       onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                       placeholder="60123456789"
@@ -210,6 +212,7 @@ export default function TaxConsultationCTA({ lang = "en" }: TaxConsultationCTAPr
                     <input
                       type="email"
                       required
+                      autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"

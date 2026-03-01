@@ -500,6 +500,7 @@ export default function DSRCalculator() {
                   <input
                     type="text"
                     required
+                    autoComplete="name"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="Enter your full name"
@@ -514,6 +515,7 @@ export default function DSRCalculator() {
                   <input
                     type="email"
                     required
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="your@email.com"
@@ -528,6 +530,7 @@ export default function DSRCalculator() {
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+60123456789"

@@ -875,6 +875,7 @@ export default function EVInsuranceCalculator() {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="Enter your full name"
+                    autoComplete="name"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -889,6 +890,7 @@ export default function EVInsuranceCalculator() {
                     value={formData.icNumber}
                     onChange={(e) => setFormData({ ...formData, icNumber: e.target.value })}
                     placeholder="e.g. 901234-14-5678"
+                    autoComplete="off"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -903,6 +905,7 @@ export default function EVInsuranceCalculator() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+60123456789"
+                    autoComplete="tel"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -916,6 +919,7 @@ export default function EVInsuranceCalculator() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="your@email.com (optional)"
+                    autoComplete="email"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
@@ -932,6 +936,7 @@ export default function EVInsuranceCalculator() {
                     placeholder="e.g. 47500"
                     pattern="[0-9]{5}"
                     maxLength={5}
+                    autoComplete="postal-code"
                     className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>

@@ -1016,6 +1016,7 @@ export default function HousingLoanSettlementCalculator() {
                       <input
                         type="text"
                         required
+                        autoComplete="name"
                         value={formData.fullName}
                         onChange={(e) =>
                           setFormData({ ...formData, fullName: e.target.value })
@@ -1032,6 +1033,7 @@ export default function HousingLoanSettlementCalculator() {
                       <input
                         type="tel"
                         required
+                        autoComplete="tel"
                         value={formData.whatsapp}
                         onChange={(e) =>
                           setFormData({ ...formData, whatsapp: e.target.value })
@@ -1165,6 +1167,7 @@ export default function HousingLoanSettlementCalculator() {
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={exitFormData.whatsapp}
                     onChange={(e) => setExitFormData({ whatsapp: e.target.value })}
                     placeholder="WhatsApp Number (+60123456789)"

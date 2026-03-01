@@ -1201,6 +1201,7 @@ export default function RefinanceCalculator() {
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Masukkan nama anda"
@@ -1213,6 +1214,7 @@ export default function RefinanceCalculator() {
                     <input
                       type="tel"
                       required
+                      autoComplete="tel"
                       value={formData.whatsapp}
                       onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                       placeholder="cth. 012-3456789"

@@ -620,6 +620,7 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
                     <input
                       type="text"
                       required
+                      autoComplete="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder={locale === "bm" ? "Masukkan nama anda" : "Enter your name"}
@@ -632,6 +633,7 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
                     <input
                       type="email"
                       required
+                      autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder={locale === "bm" ? "anda@email.com" : "your@email.com"}
@@ -644,6 +646,7 @@ export default function KitchenRenovationCalculator({ locale }: KitchenRenovatio
                     <input
                       type="tel"
                       required
+                      autoComplete="tel"
                       value={formData.whatsapp}
                       onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                       placeholder="012-3456789"

@@ -594,6 +594,7 @@ export default function PersonalLoanCalculator({ locale = "en" }: PersonalLoanCa
                   <input
                     type="text"
                     required
+                    autoComplete="name"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder={t.enterName}
@@ -608,6 +609,7 @@ export default function PersonalLoanCalculator({ locale = "en" }: PersonalLoanCa
                   <input
                     type="email"
                     required
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder={t.enterEmail}
@@ -622,6 +624,7 @@ export default function PersonalLoanCalculator({ locale = "en" }: PersonalLoanCa
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+60123456789"

@@ -538,6 +538,7 @@ export default function OfficeCleaningCalculator() {
                   <input
                     type="text"
                     required
+                    autoComplete="name"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     placeholder="Enter your full name"
@@ -550,6 +551,7 @@ export default function OfficeCleaningCalculator() {
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+60123456789"
@@ -562,6 +564,7 @@ export default function OfficeCleaningCalculator() {
                   <input
                     type="text"
                     required
+                    autoComplete="organization"
                     value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                     placeholder="Your company name"
@@ -572,6 +575,7 @@ export default function OfficeCleaningCalculator() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Office Address</label>
                   <textarea
+                    autoComplete="street-address"
                     value={formData.officeAddress}
                     onChange={(e) => setFormData({ ...formData, officeAddress: e.target.value })}
                     placeholder="Office address (optional)"

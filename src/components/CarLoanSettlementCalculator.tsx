@@ -738,6 +738,7 @@ export default function CarLoanSettlementCalculator() {
                   <input
                     type="text"
                     required
+                    autoComplete="name"
                     value={formData.fullName}
                     onChange={(e) =>
                       setFormData({ ...formData, fullName: e.target.value })
@@ -754,6 +755,7 @@ export default function CarLoanSettlementCalculator() {
                   <input
                     type="tel"
                     required
+                    autoComplete="tel"
                     value={formData.whatsapp}
                     onChange={(e) =>
                       setFormData({ ...formData, whatsapp: e.target.value })
@@ -770,6 +772,7 @@ export default function CarLoanSettlementCalculator() {
                   <input
                     type="email"
                     required
+                    autoComplete="email"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })

@@ -523,7 +523,7 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="your@email.com (optional)" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all" />
+                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="your@email.com (optional)" autoComplete="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">Wedding Date (Month/Year)</label>
