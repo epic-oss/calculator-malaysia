@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TaxConsultationCTA from "./TaxConsultationCTA";
 
 // Malaysia Tax Brackets (Chargeable Income)
@@ -42,6 +42,19 @@ export default function PCBCalculator() {
   const [maritalStatus, setMaritalStatus] = useState<"single" | "married">("single");
   const [children, setChildren] = useState(0);
   const [spouseWorking, setSpouseWorking] = useState(true);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+      setShowFloatingCTA(window.scrollY > 500);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const calculation = useMemo(() => {
     // Annual gross income
@@ -428,6 +441,22 @@ export default function PCBCalculator() {
         </div>
       </div>
 
+      {/* Floating Desktop CTA */}
+      <div className="hidden md:flex fixed bottom-5 right-6 z-50 flex-col items-end gap-2">
+        {showBackToTop && (
+          <button onClick={scrollToTop} className="w-10 h-10 bg-white border border-slate-200 rounded-full shadow-md hover:bg-slate-50 transition-all flex items-center justify-center" aria-label="Back to top">
+            <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+          </button>
+        )}
+        {showFloatingCTA && (
+          <>
+            <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-500">50,000+ PCB calculations · Updated rates</div>
+            <button onClick={scrollToTop} className="px-5 py-2.5 text-white font-bold rounded-full shadow-lg transition-all hover:opacity-90 text-sm" style={{ backgroundColor: "#6A1B9A" }}>
+              Calculate Tax →
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

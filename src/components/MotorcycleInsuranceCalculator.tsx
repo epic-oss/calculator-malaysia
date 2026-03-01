@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import MotorcycleInsuranceCTA from "./MotorcycleInsuranceCTA";
 import InsurersLogoCarousel from "./InsurersLogoCarousel";
 
@@ -43,6 +43,20 @@ export default function MotorcycleInsuranceCalculator({
   const [region, setRegion] = useState<"peninsular" | "sabah-sarawak">("peninsular");
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showStickyCTA, setShowStickyCTA] = useState(true);
+
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+      setShowFloatingCTA(window.scrollY > 500);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const selectedEngineOption = ENGINE_CC_OPTIONS.find(opt => opt.value === engineCC) || ENGINE_CC_OPTIONS[0];
 
@@ -412,6 +426,23 @@ export default function MotorcycleInsuranceCalculator({
           </div>
         </div>
       )}
+
+      {/* Floating Desktop CTA */}
+      <div className="hidden md:flex fixed bottom-5 right-6 z-50 flex-col items-end gap-2">
+        {showBackToTop && (
+          <button onClick={scrollToTop} className="w-10 h-10 bg-white border border-slate-200 rounded-full shadow-md hover:bg-slate-50 transition-all flex items-center justify-center" aria-label="Back to top">
+            <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+          </button>
+        )}
+        {showFloatingCTA && (
+          <>
+            <div className="bg-white px-3 py-1.5 rounded-full shadow-md text-xs text-slate-500">1,200+ riders compared · Instant quotes</div>
+            <button onClick={scrollToTop} className="px-5 py-2.5 text-white font-bold rounded-full shadow-lg transition-all hover:opacity-90 text-sm" style={{ backgroundColor: "#1565C0" }}>
+              Compare Now →
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
