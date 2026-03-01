@@ -122,6 +122,63 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
     setFormData({ fullName: "", phone: "+60", email: "", weddingDate: "", preferredVendors: [] });
   };
 
+  // Resolve a dropdown item's index to its option label
+  const getOptionLabel = (itemId: string): string => {
+    for (const section of config.sections) {
+      for (const item of section.items) {
+        if (item.id === itemId && item.options) {
+          const idx = (values[itemId] as number) || 0;
+          return item.options[idx]?.label || "";
+        }
+      }
+    }
+    return "";
+  };
+
+  // Build type-specific fields for the webhook payload
+  const getTypeSpecificFields = (): Record<string, string | number | boolean> => {
+    if (type === "chinese") {
+      return {
+        venue_type: getOptionLabel("venue_type"),
+        price_tier: getOptionLabel("price_per_table"),
+        num_tables: (values.num_tables as number) || 30,
+        si_dian_jin: getOptionLabel("bride_price"),
+        include_guo_da_li: !!values.guo_da_li,
+        bridal_package: getOptionLabel("photo_gown"),
+      };
+    }
+    if (type === "indian") {
+      return {
+        ceremony_type: getOptionLabel("ceremony_type"),
+        num_events: getOptionLabel("num_events"),
+        catering_style: getOptionLabel("catering"),
+        thali_budget: getOptionLabel("thali"),
+        bride_saree_budget: getOptionLabel("bride_attire"),
+        mandap_decor: getOptionLabel("mandap"),
+      };
+    }
+    if (type === "malay") {
+      return {
+        venue_type: getOptionLabel("venue"),
+        catering_tier: getOptionLabel("catering"),
+        pelamin_package: getOptionLabel("pelamin"),
+        bridal_package: getOptionLabel("bridal_package"),
+        hantaran_trays: getOptionLabel("hantaran_trays"),
+        hantaran_value: getOptionLabel("hantaran_value"),
+      };
+    }
+    if (type === "christian") {
+      return {
+        ceremony_venue: getOptionLabel("ceremony_venue"),
+        reception_venue: getOptionLabel("reception_venue"),
+        catering_style: getOptionLabel("catering"),
+        wedding_gown: getOptionLabel("wedding_gown"),
+        photo_video_package: getOptionLabel("photo_video"),
+      };
+    }
+    return {};
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -144,6 +201,7 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
       cta_source: ctaSource,
       referrer: typeof document !== "undefined" ? document.referrer : "",
       landing_page: typeof window !== "undefined" ? window.location.href : "",
+      ...getTypeSpecificFields(),
     };
     try {
       const response = await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(leadData) });
