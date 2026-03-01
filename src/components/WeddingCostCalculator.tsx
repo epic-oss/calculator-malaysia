@@ -475,7 +475,7 @@ export default function WeddingCostCalculator({ type }: { type: WeddingType }) {
       )}
 
       {/* Floating CTA Stack - button hidden on mobile (sticky bar is sufficient) */}
-      <div className="fixed bottom-20 md:bottom-[100px] right-4 md:right-[30px] z-50 flex flex-col items-end gap-3">
+      <div className="fixed bottom-20 md:bottom-5 right-4 md:right-6 z-50 flex flex-col items-end gap-2">
         {showBackToTop && (
           <button onClick={scrollToTop} className="w-10 h-10 bg-white border border-slate-200 rounded-full shadow-md hover:bg-slate-50 transition-all flex items-center justify-center" aria-label="Back to top">
             <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
